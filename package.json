@@ -1,0 +1,11 @@
+{
+  "name": "com.gilzoide.easy-transform-job",
+  "displayName": "Easy Transform Job",
+  "version": "1.0.0",
+  "description": "Streamlined way to use Parallel Tranform Jobs",
+  "homepage": "https://github.com/gilzoide/unity-easy-transform-job",
+  "license": "Unlicense",
+  "author": {
+    "name": "Gil Barbosa Reis"
+  }
+}
