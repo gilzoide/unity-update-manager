@@ -15,27 +15,30 @@ namespace Gilzoide.EasyTransformJob
             return gameObject.AddComponent<UpdateManager>();
         }
 
-        private readonly HashSet<IManagedUpdatable> _managedUpdatables = new HashSet<IManagedUpdatable>();
-        private readonly List<IManagedUpdatable> _managedUpdatablesToAdd = new List<IManagedUpdatable>();
-        private readonly List<IManagedUpdatable> _managedUpdatablesToRemove = new List<IManagedUpdatable>();
+        private readonly List<IManagedUpdatable> _managedUpdatables = new List<IManagedUpdatable>();
+        private readonly HashSet<IManagedUpdatable> _managedUpdatablesToRemove = new HashSet<IManagedUpdatable>();
 
         void Update()
         {
-            foreach (IManagedUpdatable updatable in _managedUpdatables)
+            for (int i = 0; i < _managedUpdatables.Count; i++)
             {
-                updatable.ManagedUpdate();
+                IManagedUpdatable updatable = _managedUpdatables[i];
+                if (!_managedUpdatablesToRemove.Contains(updatable))
+                {
+                    updatable.ManagedUpdate();
+                }
             }
-            
-            _managedUpdatables.UnionWith(_managedUpdatablesToAdd);
-            _managedUpdatablesToAdd.Clear();
 
-            _managedUpdatables.ExceptWith(_managedUpdatablesToRemove);
-            _managedUpdatablesToRemove.Clear();
+            if (_managedUpdatablesToRemove.Count > 0)
+            {
+                _managedUpdatables.RemoveAll(_managedUpdatablesToRemove.Contains);
+                _managedUpdatablesToRemove.Clear();
+            }
         }
 
         public void RegisterUpdatable(IManagedUpdatable updatable)
         {
-            _managedUpdatablesToAdd.Add(updatable);
+            _managedUpdatables.Add(updatable);
         }
 
         public void UnregisterUpdatable(IManagedUpdatable updatable)
