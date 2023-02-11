@@ -2,7 +2,7 @@ using System;
 
 namespace Gilzoide.EasyTransformJob
 {
-    public interface ITransformJobManager : IDisposable
+    public interface IUpdateJobManager : IDisposable
     {
         void Process();
     }
