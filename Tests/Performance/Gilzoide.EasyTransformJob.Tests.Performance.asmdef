@@ -1,0 +1,30 @@
+{
+    "name": "Gilzoide.EasyTransformJob.Tests.Performance",
+    "rootNamespace": "Gilzoide.EasyTransformJob.Tests.Performance",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "Unity.PerformanceTesting",
+        "Gilzoide.EasyTransformJob",
+        "Unity.Collections"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.test-framework.performance",
+            "expression": "",
+            "define": "HAVE_PERFORMANCE_TESTING"
+        }
+    ],
+    "noEngineReferences": false
+}
