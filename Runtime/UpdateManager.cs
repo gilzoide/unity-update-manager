@@ -5,7 +5,7 @@ namespace Gilzoide.EasyTransformJob
 {
     public class UpdateManager : MonoBehaviour
     {
-        public static UpdateManager Instance => _instance != null ? _instance : (_instance = CreateInstance());
+        public static UpdateManager Instance => (ApplicationUtils.IsQuitting || _instance != null) ? _instance : (_instance = CreateInstance());
         protected static UpdateManager _instance;
 
         private static UpdateManager CreateInstance()
@@ -15,32 +15,32 @@ namespace Gilzoide.EasyTransformJob
             return gameObject.AddComponent<UpdateManager>();
         }
 
-        private readonly List<AUpdateManagerBehaviour> _managedUpdatables = new List<AUpdateManagerBehaviour>();
+        private readonly HashSet<IManagedUpdatable> _managedUpdatables = new HashSet<IManagedUpdatable>();
+        private readonly List<IManagedUpdatable> _managedUpdatablesToAdd = new List<IManagedUpdatable>();
+        private readonly List<IManagedUpdatable> _managedUpdatablesToRemove = new List<IManagedUpdatable>();
 
         void Update()
         {
-            for (int i = 0; i < _managedUpdatables.Count; i++)
+            foreach (IManagedUpdatable updatable in _managedUpdatables)
             {
-                _managedUpdatables[i].ManagedUpdate();
+                updatable.ManagedUpdate();
             }
+            
+            _managedUpdatables.UnionWith(_managedUpdatablesToAdd);
+            _managedUpdatablesToAdd.Clear();
+
+            _managedUpdatables.ExceptWith(_managedUpdatablesToRemove);
+            _managedUpdatablesToRemove.Clear();
         }
 
-        public void RegisterBehaviour(AUpdateManagerBehaviour updatable)
+        public void RegisterUpdatable(IManagedUpdatable updatable)
         {
-            int index = _managedUpdatables.BinarySearch(updatable, ObjectComparer.Instance);
-            if (index < 0)
-            {
-                _managedUpdatables.Insert(~index, updatable);
-            }
+            _managedUpdatablesToAdd.Add(updatable);
         }
 
-        public void UnregisterBehaviour(AUpdateManagerBehaviour updatable)
+        public void UnregisterUpdatable(IManagedUpdatable updatable)
         {
-            int index = _managedUpdatables.BinarySearch(updatable, ObjectComparer.Instance);
-            if (index >= 0)
-            {
-                _managedUpdatables.RemoveAt(index);
-            }
+            _managedUpdatablesToRemove.Add(updatable);
         }
     }
 }

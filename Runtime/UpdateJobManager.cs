@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
-using UnityEngine;
 using UnityEngine.Jobs;
 
 namespace Gilzoide.EasyTransformJob
@@ -20,28 +19,28 @@ namespace Gilzoide.EasyTransformJob
         private NativeArray<TData> _jobData;
         private JobHandle _jobHandle;
 
-        public UpdateJobManager()
+        ~UpdateJobManager()
         {
-            UpdateJobRunner.Instance.RegisterJobManager(this);
+            Dispose();
         }
 
         public void Process()
         {
-            CompleteJob();
+            _jobHandle.Complete();
 
             if (_isDirty)
             {
-                if (_jobTransforms.isCreated)
-                {
-                    _jobTransforms.Dispose();
-                }
-                
                 RefreshDataProviders();
                 FillTransformAccessArray();                
                 _isDirty = false;
             }
 
-            FillData();
+            if (_dataProviders.Count == 0)
+            {
+                Dispose();
+                return;
+            }
+
             _jobHandle = new UpdateJob<TData>
             {
                 Data = _jobData,
@@ -50,16 +49,27 @@ namespace Gilzoide.EasyTransformJob
 
         public void Dispose()
         {
-            CompleteJob();
+            _jobHandle.Complete();
+
+            if (_jobData.IsCreated)
+            {
+                _jobData.Dispose();
+            }
 
             if (_jobTransforms.isCreated)
             {
                 _jobTransforms.Dispose();
             }
+
+            UpdateJobRunner.Instance.UnregisterJobManager(this);
         }
 
         public void AddProvider(AJobBehaviour<TData> provider)
         {
+            if (_dataProviders.Count == 0 && _dataProvidersToAdd.Count == 0)
+            {
+                UpdateJobRunner.Instance.RegisterJobManager(this);
+            }
             _dataProvidersToAdd.Add(provider);
             _isDirty = true;
         }
@@ -74,25 +84,20 @@ namespace Gilzoide.EasyTransformJob
             }
         }
 
-        private void CompleteJob()
+        public TData GetData(AJobBehaviour<TData> provider)
         {
-            _jobHandle.Complete();
-            if (_jobData.IsCreated)
-            {
-                for (int i = 0; i < _jobData.Length; i++)
-                {
-                    if (!_removedDataProviderIndices.Contains(i))
-                    {
-                        _dataProviders[i].Data = _jobData[i];
-                    }
-                }
-                _jobData.Dispose();
-            }
+            int index = _dataProviders.BinarySearch(provider, ObjectComparer.Instance);
+            return index >= 0 ? _jobData[index] : default;
         }
 
         private void FillTransformAccessArray()
         {
-            TransformAccessArray.Allocate(_dataProviders.Count, -1, out _jobTransforms);
+            if (_jobTransforms.isCreated)
+            {
+                _jobTransforms.Dispose();
+            }
+
+            TransformAccessArray.Allocate(0, -1, out _jobTransforms);
             for (int i = 0; i < _dataProviders.Count; i++)
             {
                 _jobTransforms.Add(_dataProviders[i].transform);
@@ -101,29 +106,37 @@ namespace Gilzoide.EasyTransformJob
 
         private void RefreshDataProviders()
         {
+#if UNITY_2021_1_OR_NEWER
+            using var _ = UnityEngine.Pool.ListPool<TData>.Get(out List<TData> newData);
+            newData.AddRange(_jobData);
+#else
+            List<TData> newData = new List<TData>(_jobData);
+#endif
             foreach (int index in _removedDataProviderIndices.Reverse())
             {
                 _dataProviders.RemoveAt(index);
+                newData.RemoveAt(index);
             }
             _removedDataProviderIndices.Clear();
 
             foreach (AJobBehaviour<TData> provider in _dataProvidersToAdd)
             {
-                int index = _dataProviders.BinarySearch(provider, ObjectComparer.Instance);
-                if (index < 0)
+                int index = _dataProviders.AddSorted(provider, ObjectComparer.Instance);
+                if (index >= 0)
                 {
-                    _dataProviders.Insert(~index, provider);
+                    newData.Insert(index, provider.InitialJobData);
                 }
             }
             _dataProvidersToAdd.Clear();
-        }
 
-        private void FillData()
-        {
-            _jobData = new NativeArray<TData>(_dataProviders.Count, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
-            for (int i = 0; i < _dataProviders.Count; i++)
+            if (_jobData.IsCreated)
             {
-                _jobData[i] = _dataProviders[i].Data;
+                _jobData.Dispose();
+            }
+            _jobData = new NativeArray<TData>(newData.Count, Allocator.Persistent);
+            for (int i = 0; i < newData.Count; i++)
+            {
+                _jobData[i] = newData[i];
             }
         }
     }

@@ -6,12 +6,12 @@ namespace Gilzoide.EasyTransformJob
     {
         protected virtual void OnEnable()
         {
-            UpdateManager.Instance.RegisterBehaviour(this);
+            UpdateManager.Instance.RegisterUpdatable(this);
         }
 
         protected virtual void OnDisable()
         {
-            UpdateManager.Instance.UnregisterBehaviour(this);
+            UpdateManager.Instance.UnregisterUpdatable(this);
         }
 
         public abstract void ManagedUpdate();

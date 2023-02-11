@@ -3,21 +3,14 @@ using UnityEngine;
 
 namespace Gilzoide.EasyTransformJob
 {
-    public class UpdateJobRunner : MonoBehaviour
+    public class UpdateJobRunner : IManagedUpdatable
     {
-        public static UpdateJobRunner Instance => _instance != null ? _instance : (_instance = CreateInstance());
+        public static UpdateJobRunner Instance => _instance != null ? _instance : (_instance = new UpdateJobRunner());
         protected static UpdateJobRunner _instance;
-
-        private static UpdateJobRunner CreateInstance()
-        {
-            var gameObject = new GameObject(nameof(UpdateJobRunner));
-            DontDestroyOnLoad(gameObject);
-            return gameObject.AddComponent<UpdateJobRunner>();
-        }
 
         private readonly List<IUpdateJobManager> _jobManagers = new List<IUpdateJobManager>();
 
-        void Update()
+        public void ManagedUpdate()
         {
             UpdateJobTime.DeltaTime = Time.deltaTime;
             UpdateJobTime.SmoothDeltaTime = Time.smoothDeltaTime;
@@ -29,22 +22,22 @@ namespace Gilzoide.EasyTransformJob
             }
         }
 
-        void OnDestroy()
-        {
-            for (int i = 0; i < _jobManagers.Count; i++)
-            {
-                _jobManagers[i].Dispose();
-            }
-        }
-
         public void RegisterJobManager(IUpdateJobManager manager)
         {
+            if (_jobManagers.Count == 0)
+            {
+                UpdateManager.Instance.RegisterUpdatable(this);
+            }
             _jobManagers.Add(manager);
         }
 
         public void UnregisterJobManager(IUpdateJobManager manager)
         {
             _jobManagers.Remove(manager);
+            if (_jobManagers.Count == 0)
+            {
+                UpdateManager.Instance.UnregisterUpdatable(this);
+            }
         }
     }
 }

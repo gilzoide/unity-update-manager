@@ -15,6 +15,8 @@ namespace Gilzoide.EasyTransformJob
             UpdateJobManager<TData>.Instance.RemoveProvider(this);
         }
 
-        public abstract TData Data { get; set; }
+        public abstract TData InitialJobData { get; }
+
+        public TData JobData => UpdateJobManager<TData>.Instance.GetData(this);
     }
 }

@@ -1,5 +1,5 @@
-using Unity.Burst;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine.Jobs;
 
 namespace Gilzoide.EasyTransformJob
@@ -9,11 +9,10 @@ namespace Gilzoide.EasyTransformJob
     {
         public NativeArray<TData> Data;
 
-        public void Execute(int index, TransformAccess transform)
+        public unsafe void Execute(int index, TransformAccess transform)
         {
-            var data = Data[index];
-            data.Process(transform);
-            Data[index] = data;
+            void* dataPointer = NativeArrayUnsafeUtility.GetUnsafePtr(Data);
+            UnsafeUtility.ArrayElementAsRef<TData>(dataPointer, index).Process(transform);
         }
     }
 }
