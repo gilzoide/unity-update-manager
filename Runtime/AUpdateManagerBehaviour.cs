@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Gilzoide.EasyTransformJob
 {
-    public abstract class AUpdateManagerBehaviour : MonoBehaviour, IManagedUpdatable
+    public abstract class AUpdateManagerBehaviour : MonoBehaviour, IUpdatable
     {
         protected virtual void OnEnable()
         {

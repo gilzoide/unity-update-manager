@@ -8,42 +8,46 @@ namespace Gilzoide.EasyTransformJob
         public static UpdateManager Instance => (ApplicationUtils.IsQuitting || _instance != null) ? _instance : (_instance = CreateInstance());
         protected static UpdateManager _instance;
 
+        private int _loopCounter;
+
         private static UpdateManager CreateInstance()
         {
-            var gameObject = new GameObject(nameof(UpdateManager));
+            var gameObject = new GameObject(nameof(UpdateManager))
+            {
+                hideFlags = HideFlags.DontSave,
+            };
             DontDestroyOnLoad(gameObject);
             return gameObject.AddComponent<UpdateManager>();
         }
 
-        private readonly List<IManagedUpdatable> _managedUpdatables = new List<IManagedUpdatable>();
-        private readonly HashSet<IManagedUpdatable> _managedUpdatablesToRemove = new HashSet<IManagedUpdatable>();
+        private readonly List<IUpdatable> _updatableObjects = new List<IUpdatable>();
 
-        void Update()
+        private void Update()
         {
-            for (int i = 0; i < _managedUpdatables.Count; i++)
+            for (_loopCounter = 0; _loopCounter < _updatableObjects.Count; _loopCounter++)
             {
-                IManagedUpdatable updatable = _managedUpdatables[i];
-                if (!_managedUpdatablesToRemove.Contains(updatable))
-                {
-                    updatable.ManagedUpdate();
-                }
-            }
-
-            if (_managedUpdatablesToRemove.Count > 0)
-            {
-                _managedUpdatables.RemoveAll(_managedUpdatablesToRemove.Contains);
-                _managedUpdatablesToRemove.Clear();
+                _updatableObjects[_loopCounter].ManagedUpdate();
             }
         }
 
-        public void RegisterUpdatable(IManagedUpdatable updatable)
+        public void RegisterUpdatable(IUpdatable updatable)
         {
-            _managedUpdatables.Add(updatable);
+            _updatableObjects.Add(updatable);
         }
 
-        public void UnregisterUpdatable(IManagedUpdatable updatable)
+        public void UnregisterUpdatable(IUpdatable updatable)
         {
-            _managedUpdatablesToRemove.Add(updatable);
+            int index = _updatableObjects.IndexOf(updatable);
+            if (index < 0)
+            {
+                return;
+            }
+
+            _updatableObjects.RemoveAt(index);
+            if (_loopCounter >= index)
+            {
+                _loopCounter--;
+            }
         }
     }
 }

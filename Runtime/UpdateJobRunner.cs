@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Gilzoide.EasyTransformJob
 {
-    public class UpdateJobRunner : IManagedUpdatable
+    public class UpdateJobRunner : IUpdatable
     {
         public static UpdateJobRunner Instance => _instance != null ? _instance : (_instance = new UpdateJobRunner());
         protected static UpdateJobRunner _instance;

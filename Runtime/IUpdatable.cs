@@ -1,6 +1,6 @@
 namespace Gilzoide.EasyTransformJob
 {
-    public interface IManagedUpdatable
+    public interface IUpdatable
     {
         void ManagedUpdate();
     }
