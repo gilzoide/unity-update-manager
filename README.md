@@ -65,7 +65,7 @@ https://github.com/gilzoide/unity-update-manager.git
 
   public class MyUpdatable : IUpdatable
   {
-      public override void ManagedUpdate()
+      public void ManagedUpdate()
       {
           Debug.Log("This will also be called every frame!");
       }
@@ -87,8 +87,10 @@ https://github.com/gilzoide/unity-update-manager.git
   ```
 - `UpdateTransformJobManager` + `MonoBehaviour`
   ```cs
+  using System.Collections;
   using Gilzoide.UpdateManager.Jobs;
   using UnityEngine;
+  using UnityEngine.Jobs;
 
   // 1. Create the Job struct
   public struct MyMoveJob : IUpdateTransformJob
