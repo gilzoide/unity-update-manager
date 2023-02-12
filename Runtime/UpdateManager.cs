@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Gilzoide.EasyTransformJob
+namespace Gilzoide.UpdateManager
 {
     public class UpdateManager : MonoBehaviour
     {

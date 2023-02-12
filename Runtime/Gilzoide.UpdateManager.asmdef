@@ -1,6 +1,6 @@
 {
-    "name": "Gilzoide.EasyTransformJob",
-    "rootNamespace": "Gilzoide.EasyTransformJob",
+    "name": "Gilzoide.UpdateManager",
+    "rootNamespace": "Gilzoide.UpdateManager",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,12 +1,11 @@
 {
-    "name": "Gilzoide.EasyTransformJob.Tests.Performance",
-    "rootNamespace": "Gilzoide.EasyTransformJob.Tests.Performance",
+    "name": "Gilzoide.UpdateManager.Tests.Performance",
+    "rootNamespace": "Gilzoide.UpdateManager.Tests.Performance",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Unity.PerformanceTesting",
-        "Gilzoide.EasyTransformJob",
-        "Unity.Collections"
+        "Gilzoide.UpdateManager"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

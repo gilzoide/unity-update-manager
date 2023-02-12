@@ -3,7 +3,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine.Jobs;
 
-namespace Gilzoide.EasyTransformJob
+namespace Gilzoide.UpdateManager
 {
     public class UpdateJobManager<TData> : IUpdatable
         where TData : struct, IUpdateJob

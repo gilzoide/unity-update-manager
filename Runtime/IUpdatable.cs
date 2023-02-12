@@ -1,4 +1,4 @@
-namespace Gilzoide.EasyTransformJob
+namespace Gilzoide.UpdateManager
 {
     public interface IUpdatable
     {

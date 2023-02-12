@@ -1,6 +1,6 @@
 using UnityEngine.Jobs;
 
-namespace Gilzoide.EasyTransformJob
+namespace Gilzoide.UpdateManager
 {
     public interface IUpdateJob
     {

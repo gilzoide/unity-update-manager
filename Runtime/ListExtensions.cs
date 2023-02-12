@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Gilzoide.EasyTransformJob
+namespace Gilzoide.UpdateManager
 {
     public static class ListExtensions
     {

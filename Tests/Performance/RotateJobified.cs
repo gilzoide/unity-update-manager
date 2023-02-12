@@ -1,15 +1,13 @@
-using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Jobs;
 
-namespace Gilzoide.EasyTransformJob.Tests.Performance
+namespace Gilzoide.UpdateManager.Tests.Performance
 {
     public struct RotateJob : IUpdateJob
     {
         public float Speed;
         public float Delta;
         public float Max;
-        public FixedBytes4094 Bytes;
 
         public void Process(TransformAccess transform)
         {

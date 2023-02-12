@@ -1,12 +1,11 @@
 #if HAVE_PERFORMANCE_TESTING
 using System.Collections;
 using System.Collections.Generic;
-using NUnit.Framework;
 using Unity.PerformanceTesting;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Gilzoide.EasyTransformJob.Tests.Performance
+namespace Gilzoide.UpdateManager.Tests.Performance
 {
     public class ComparePerformance
     {

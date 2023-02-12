@@ -1,14 +1,12 @@
-using Unity.Collections;
 using UnityEngine;
 
-namespace Gilzoide.EasyTransformJob.Tests.Performance
+namespace Gilzoide.UpdateManager.Tests.Performance
 {
     public class RotateManaged : AUpdateManagerBehaviour
     {
         public float Speed = 0;
         public float Delta = 0.1f;
         public float Max = 100;
-        public FixedBytes510 Bytes;
 
         public override void ManagedUpdate()
         {
