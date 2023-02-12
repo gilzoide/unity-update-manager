@@ -13,7 +13,7 @@ namespace Gilzoide.EasyTransformJob.Tests.Performance
 
         public void Process(TransformAccess transform)
         {
-            var rotation = Vector3.one * (Speed * UpdateJobTime.DeltaTime);
+            var rotation = Vector3.one * (Speed * UpdateJobTime.Instance.deltaTime);
             transform.localRotation *= Quaternion.Euler(rotation.x, rotation.y, rotation.z);
             Speed = Mathf.Clamp(Speed + Delta, 0, Max);
         }
@@ -21,25 +21,12 @@ namespace Gilzoide.EasyTransformJob.Tests.Performance
 
     public class RotateJobified : AJobBehaviour<RotateJob>
     {
-        public RotateJob _velocidade = new RotateJob
+        public override RotateJob InitialJobData => new RotateJob
         {
             Speed = 0,
             Delta = 0.1f,
             Max = 100,
         };
-
-        public override RotateJob InitialJobData => _velocidade;
-
-        void PrintData()
-        {
-            Debug.Log($"VELOCIDADE: {JobData.Speed}", this);
-        }
-
-        // public RotateJob Data;
-        // {
-        //     get => _velocidade;
-        //     set => _velocidade = value;
-        // }
     }
 }
 

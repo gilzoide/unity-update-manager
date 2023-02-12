@@ -1,67 +1,21 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Gilzoide.EasyTransformJob
 {
     public static class ListExtensions
     {
-        public static int AddSorted<T>(this List<T> list, T value)
+        public static void RemoveAtSwapBack<T>(this List<T> list, int index, out T swappedValue)
         {
-            int index = list.BinarySearch(value);
-            if (index < 0)
+            int lastIndex = list.Count - 1;
+            if (lastIndex > 0 && lastIndex != index)
             {
-                index = ~index;
-                list.Insert(index, value);
-                return index;
+                swappedValue = list[index] = list[lastIndex];
             }
             else
             {
-                return -1;
+                swappedValue = default;
             }
-        }
-
-        public static int AddSorted<T>(this List<T> list, T value, IComparer<T> comparer)
-        {
-            int index = list.BinarySearch(value, comparer);
-            if (index < 0)
-            {
-                index = ~index;
-                list.Insert(index, value);
-                return index;
-            }
-            else
-            {
-                return -1;
-            }
-        }
-
-        public static bool RemoveSorted<T>(this List<T> list, T value)
-        {
-            int index = list.BinarySearch(value);
-            if (index >= 0)
-            {
-                list.RemoveAt(index);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public static bool RemoveSorted<T>(this List<T> list, T value, IComparer<T> comparer)
-        {
-            int index = list.BinarySearch(value, comparer);
-            if (index >= 0)
-            {
-                list.RemoveAt(index);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            list.RemoveAt(lastIndex);
         }
     }
 }
