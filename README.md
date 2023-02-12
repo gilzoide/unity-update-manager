@@ -41,7 +41,7 @@ Install using the [Unity Package Manager](https://docs.unity3d.com/Manual/upm-ui
 with the following URL:
 
 ```
-https://github.com/gilzoide/unity-update-manager.git
+https://github.com/gilzoide/unity-update-manager.git#1.0.0
 ```
 
 
