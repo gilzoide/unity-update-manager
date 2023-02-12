@@ -22,7 +22,8 @@ More info on Update Manager vs traditional Update: https://github.com/Menyus777/
   Remember to unregister the objects with `UpdateJobManager<>.Instance.Unregister` or `UpdateTransformJobManager<>.Instance.Unregister` when necessary.
 - Inherit `AJobBehaviour<>` to automatically register/unregister MonoBehaviours in `UpdateTransformJobManager<>` in their `OnEnable`/`OnDisable` messages
 - `UpdateJobTime` singleton class with information from Unity's `Time` class that you can access from within jobs (`deltaTime`, `time`, etc...)
-- Configurable job batch size using `[UpdateJobOptions(BatchSize = ...)]` attribute in job structs
+- Configurable job batch size using `[UpdateJobOptions(BatchSize = ...)]` attribute in job structs.
+  This is ignored in read-write transform jobs.
 
 
 ## Caveats
