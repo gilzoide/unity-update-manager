@@ -1,12 +1,12 @@
 {
-  "name": "com.gilzoide.jobified-update",
-  "displayName": "Jobified Update",
+  "name": "com.gilzoide.update-manager",
+  "displayName": "Update Manager",
   "version": "1.0.0",
-  "description": "Simple jobified Update method for MonoBehaviours",
-  "homepage": "https://github.com/gilzoide/unity-jobified-update",
+  "description": "Simple Update Manager pattern + Jobified Update for MonoBehaviours",
+  "homepage": "https://github.com/gilzoide/unity-update-manager",
   "license": "Unlicense",
   "author": {
     "name": "Gil Barbosa Reis"
   },
-  "unity": "2018.3"
+  "unity": "2018.1"
 }
