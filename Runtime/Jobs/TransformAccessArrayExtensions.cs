@@ -1,6 +1,6 @@
 using UnityEngine.Jobs;
 
-namespace Gilzoide.UpdateManager
+namespace Gilzoide.UpdateManager.Jobs
 {
     public static class TransformAccessArrayExtensions
     {

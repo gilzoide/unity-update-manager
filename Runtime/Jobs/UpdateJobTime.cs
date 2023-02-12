@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Gilzoide.UpdateManager
+namespace Gilzoide.UpdateManager.Jobs
 {
     public class UpdateJobTime : IUpdatable
     {

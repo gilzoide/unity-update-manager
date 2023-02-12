@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Gilzoide.UpdateManager
+namespace Gilzoide.UpdateManager.Jobs
 {
     public abstract class AJobBehaviour<TData> : MonoBehaviour
         where TData : struct, IUpdateJob

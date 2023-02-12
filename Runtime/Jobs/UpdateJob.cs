@@ -2,7 +2,7 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine.Jobs;
 
-namespace Gilzoide.UpdateManager
+namespace Gilzoide.UpdateManager.Jobs
 {
     public struct UpdateJob<TData> : IJobParallelForTransform
         where TData : struct, IUpdateJob
