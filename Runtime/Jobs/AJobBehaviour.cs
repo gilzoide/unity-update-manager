@@ -7,12 +7,12 @@ namespace Gilzoide.UpdateManager.Jobs
     {
         public virtual void OnEnable()
         {
-            UpdateTransformJobManager<TData>.Instance.Register(this);
+            this.RegisterInManager();
         }
 
         public virtual void OnDisable()
         {
-            UpdateTransformJobManager<TData>.Instance.Unregister(this);
+            this.UnregisterInManager();
         }
 
         public Transform Transform => transform;

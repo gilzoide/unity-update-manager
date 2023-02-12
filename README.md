@@ -22,6 +22,12 @@ More info on Update Manager vs traditional Update: https://github.com/Menyus777/
 - `UpdateJobTime` singleton class with information from Unity's `Time` class that you can access from within jobs (`deltaTime`, `time`, etc...)
 
 
+## Caveats
+- `UpdateManager` doesn't have the concept of script execution order like Unity MonoBehaviours, so don't rely on execution order
+- `UpdateJobManager<>` and `UpdateTransformJobManager<>` use `NativeArray`s to manage all updatables' data.
+  Since Unity doesn't support nested `NativeArray`s, you cannot use `NativeArray`s in managed jobs.
+
+
 ## How to install
 Install using the [Unity Package Manager](https://docs.unity3d.com/Manual/upm-ui-giturl.html)
 with the following URL:
@@ -61,12 +67,14 @@ https://github.com/gilzoide/unity-update-manager.git
       public void StartUpdating()
       {
           UpdateManager.Instance.Register(this);
+          // Alias: `this.RegisterInManager()`
       }
 
       // call this when necessary to stop the updates
       public void StopUpdating()
       {
           UpdateManager.Instance.Unregister(this);
+          // Alias: `this.UnregisterInManager()`
       }
   }
   ```
@@ -87,7 +95,7 @@ https://github.com/gilzoide/unity-update-manager.git
           Debug.Log("This will be called every frame using Unity's Job system");
           // This runs outside of the Main Thread, so
           // we need to use `UpdateJobTime` instead of `Time`
-          float deltaTime = UpdateJobTime.deltaTime;
+          float deltaTime = UpdateJobTime.Instance.deltaTime;
           // You can modify the Transform in jobs!
           transform.localPosition += Direction * Speed * deltaTime;
           // You can modify the struct's value and fetch them later!
@@ -147,12 +155,14 @@ https://github.com/gilzoide/unity-update-manager.git
       public void StartUpdating()
       {
           UpdateJobManager<MyCountJob>.Instance.Register(this);
+          // Alias: `this.RegisterInManager()`
       }
 
       // call this when necessary to stop the updates
       public void StopUpdating()
       {
           UpdateJobManager<MyCountJob>.Instance.Unregister(this);
+          // Alias: `this.UnregisterInManager()`
       }
 
       // fetch current data using `this.GetJobData`
