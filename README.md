@@ -14,8 +14,11 @@ More info on Update Manager vs traditional Update: https://github.com/Menyus777/
 - Inherit `AUpdateManagerBehaviour` to automatically register/unregister MonoBehaviours in `UpdateManager` in their `OnEnable`/`OnDisable` messages
 - Use `UpdateJobManager<>` to run jobs every frame using Unity's Job system
 - Use `UpdateTransformJobManager<>` to run jobs with `TransformAccess` every frame using Unity's Job system, so you can change your objects' transforms from jobs
-- Inherit `AJobBehaviour` to automatically register/unregister MonoBehaviours in `UpdateTransformJobManager<>` in their `OnEnable`/`OnDisable` messages
 - Job data may be modified from within jobs and fetched later
+- Both `MonoBehaviour` and pure C# classes are supported, just implement `IJobUpdatable<>` or `ITransformJobUpdatable` interface and register the object to be updated using `UpdateJobManager<>.Instance.Register` or `UpdateTransformJobManager<>.Instance.Register`.
+  
+  Remember to unregister the objects with `UpdateJobManager<>.Instance.Unregister` or `UpdateTransformJobManager<>.Instance.Unregister` when necessary.
+- Inherit `AJobBehaviour` to automatically register/unregister MonoBehaviours in `UpdateTransformJobManager<>` in their `OnEnable`/`OnDisable` messages
 - `UpdateJobTime` singleton class with information from Unity's `Time` class that you can access from within jobs (`deltaTime`, `time`, etc...)
 
 
