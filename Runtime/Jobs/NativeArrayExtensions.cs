@@ -7,7 +7,8 @@ namespace Gilzoide.UpdateManager.Jobs
     {
         public static void SwapBack<T>(this NativeArray<T> array, int index) where T : struct
         {
-            if (array.Length > 1)
+            int lastIndex = array.Length - 1;
+            if (lastIndex > 0 && lastIndex != index)
             {
                 array[index] = array[array.Length - 1];
             }
