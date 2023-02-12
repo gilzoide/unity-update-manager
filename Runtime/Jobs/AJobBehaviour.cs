@@ -2,21 +2,21 @@ using UnityEngine;
 
 namespace Gilzoide.UpdateManager.Jobs
 {
-    public abstract class AJobBehaviour<TData> : MonoBehaviour
-        where TData : struct, IUpdateJob
+    public abstract class AJobBehaviour<TData> : MonoBehaviour, ITransformJobUpdatable<TData>
+        where TData : struct, IUpdateTransformJob
     {
         public virtual void OnEnable()
         {
-            UpdateJobManager<TData>.Instance.AddProvider(this);
+            UpdateTransformJobManager<TData>.Instance.Register(this);
         }
 
         public virtual void OnDisable()
         {
-            UpdateJobManager<TData>.Instance.RemoveProvider(this);
+            UpdateTransformJobManager<TData>.Instance.Unregister(this);
         }
 
+        public Transform Transform => transform;
         public virtual TData InitialJobData => default;
-
-        public TData JobData => UpdateJobManager<TData>.Instance.GetData(this);
+        public TData JobData => UpdateTransformJobManager<TData>.Instance.GetData(this);
     }
 }

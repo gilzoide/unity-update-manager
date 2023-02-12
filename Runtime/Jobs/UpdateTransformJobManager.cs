@@ -3,16 +3,16 @@ using Unity.Jobs;
 
 namespace Gilzoide.UpdateManager.Jobs
 {
-    public class UpdateJobManager<TData> : IUpdatable
-        where TData : struct, IUpdateJob
+    public class UpdateTransformJobManager<TData> : IUpdatable
+        where TData : struct, IUpdateTransformJob
     {
-        public static UpdateJobManager<TData> Instance => _instance != null ? _instance : (_instance = new UpdateJobManager<TData>());
-        private static UpdateJobManager<TData> _instance;
+        public static UpdateTransformJobManager<TData> Instance => _instance != null ? _instance : (_instance = new UpdateTransformJobManager<TData>());
+        private static UpdateTransformJobManager<TData> _instance;
 
-        private readonly UpdateJobProviderCollection<TData> _jobProvider = new UpdateJobProviderCollection<TData>();
+        private readonly UpdateTransformJobProviderCollection<TData> _jobProvider = new UpdateTransformJobProviderCollection<TData>();
         private JobHandle _jobHandle;
 
-        ~UpdateJobManager()
+        ~UpdateTransformJobManager()
         {
             Dispose();
         }
@@ -29,7 +29,7 @@ namespace Gilzoide.UpdateManager.Jobs
                 return;
             }
 
-            _jobHandle = _jobProvider.ScheduleJob(64);
+            _jobHandle = _jobProvider.ScheduleJob();
         }
 
         public void Dispose()
@@ -42,7 +42,7 @@ namespace Gilzoide.UpdateManager.Jobs
             UpdateManager.Instance.Unregister(this);
         }
 
-        public void Register(IJobUpdatable<TData> provider)
+        public void Register(ITransformJobUpdatable<TData> provider)
         {
             _jobProvider.Add(provider, out bool shouldStartUpdating);
             if (shouldStartUpdating)
@@ -52,12 +52,12 @@ namespace Gilzoide.UpdateManager.Jobs
             }
         }
 
-        public void Unregister(IJobUpdatable<TData> provider)
+        public void Unregister(ITransformJobUpdatable<TData> provider)
         {
             _jobProvider.Remove(provider);
         }
 
-        public TData GetData(IJobUpdatable<TData> provider)
+        public TData GetData(ITransformJobUpdatable<TData> provider)
         {
             return _jobProvider.GetData(provider);
         }

@@ -30,12 +30,12 @@ namespace Gilzoide.UpdateManager
             }
         }
 
-        public void RegisterUpdatable(IUpdatable updatable)
+        public void Register(IUpdatable updatable)
         {
             _updatableObjects.Add(updatable);
         }
 
-        public void UnregisterUpdatable(IUpdatable updatable)
+        public void Unregister(IUpdatable updatable)
         {
             int index = _updatableObjects.IndexOf(updatable);
             if (index < 0)

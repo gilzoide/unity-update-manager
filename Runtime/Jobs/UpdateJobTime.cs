@@ -20,7 +20,7 @@ namespace Gilzoide.UpdateManager.Jobs
         {
             if (registerCount == 0)
             {
-                UpdateManager.Instance.RegisterUpdatable(this);
+                UpdateManager.Instance.Register(this);
             }
             registerCount++;
         }
@@ -30,7 +30,7 @@ namespace Gilzoide.UpdateManager.Jobs
             registerCount--;
             if (registerCount == 0)
             {
-                UpdateManager.Instance.UnregisterUpdatable(this);
+                UpdateManager.Instance.Unregister(this);
             }
         }
 

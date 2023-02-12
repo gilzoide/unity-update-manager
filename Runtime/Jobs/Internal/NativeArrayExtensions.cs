@@ -1,7 +1,7 @@
 using Unity.Collections;
 using UnityEngine;
 
-namespace Gilzoide.UpdateManager.Jobs
+namespace Gilzoide.UpdateManager.Jobs.Internal
 {
     public static class NativeArrayExtensions
     {

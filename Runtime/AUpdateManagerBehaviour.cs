@@ -6,12 +6,12 @@ namespace Gilzoide.UpdateManager
     {
         protected virtual void OnEnable()
         {
-            UpdateManager.Instance.RegisterUpdatable(this);
+            UpdateManager.Instance.Register(this);
         }
 
         protected virtual void OnDisable()
         {
-            UpdateManager.Instance.UnregisterUpdatable(this);
+            UpdateManager.Instance.Unregister(this);
         }
 
         public abstract void ManagedUpdate();

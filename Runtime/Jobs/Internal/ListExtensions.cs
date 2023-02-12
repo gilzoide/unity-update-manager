@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Gilzoide.UpdateManager.Jobs
+namespace Gilzoide.UpdateManager.Jobs.Internal
 {
     public static class ListExtensions
     {
