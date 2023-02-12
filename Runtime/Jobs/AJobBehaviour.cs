@@ -17,6 +17,6 @@ namespace Gilzoide.UpdateManager.Jobs
 
         public Transform Transform => transform;
         public virtual TData InitialJobData => default;
-        public TData JobData => UpdateTransformJobManager<TData>.Instance.GetData(this);
+        public TData JobData => this.GetJobData();
     }
 }

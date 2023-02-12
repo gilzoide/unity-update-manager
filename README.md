@@ -70,7 +70,7 @@ https://github.com/gilzoide/unity-update-manager.git
       }
   }
   ```
-- `UpdateJobManager` + `MonoBehaviour`
+- `UpdateTransformJobManager` + `MonoBehaviour`
   ```cs
   using Gilzoide.UpdateManager.Jobs;
   using UnityEngine;
@@ -155,8 +155,8 @@ https://github.com/gilzoide/unity-update-manager.git
           UpdateJobManager<MyCountJob>.Instance.Unregister(this);
       }
 
-      // fetch current data using `UpdateJobManager<>.Instance.GetData`
-      public int CurrentCount => UpdateJobManager<MyCountJob>.Instance.GetData(this).Count;
+      // fetch current data using `this.GetJobData`
+      public int CurrentCount => this.GetJobData().Count;
   }
   ```
 
