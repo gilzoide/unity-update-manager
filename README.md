@@ -182,4 +182,13 @@ https://github.com/gilzoide/unity-update-manager.git
 
 
 ## Benchmarks
-TODO
+1. Test with 2000 spinning cubes running at 30 FPS in a Xiaomi Redmi 4X Android device.
+   - Plain Update: 12~13ms updating, 8~10ms spare in frame
+   - Update Manager: 7~8ms updating, 12~15ms spare in frame
+   - Fully parallelized transform job: ~2ms updating, 18~20ms spare in frame
+   ![](Extras~/demo.gif)
+2. 1000 spinning game objects running in an automated performace testing running in a M1 Macbook Pro
+   - Plain Update: ~1.01ms updating
+   - Update Manager: ~0.91ms updating
+   - Fully parallelized transform job: ~0.60ms updating
+   ![](Extras~/performance-testing.png)
