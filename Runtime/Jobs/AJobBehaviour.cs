@@ -15,7 +15,7 @@ namespace Gilzoide.UpdateManager.Jobs
             UpdateJobManager<TData>.Instance.RemoveProvider(this);
         }
 
-        public abstract TData InitialJobData { get; }
+        public virtual TData InitialJobData => default;
 
         public TData JobData => UpdateJobManager<TData>.Instance.GetData(this);
     }
