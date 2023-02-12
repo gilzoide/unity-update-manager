@@ -1,5 +1,6 @@
 using Gilzoide.UpdateManager.Jobs.Internal;
 using Unity.Jobs;
+using UnityEngine;
 
 namespace Gilzoide.UpdateManager.Jobs
 {
@@ -11,6 +12,11 @@ namespace Gilzoide.UpdateManager.Jobs
 
         private readonly UpdateJobProvider<TData> _jobProvider = new UpdateJobProvider<TData>();
         private JobHandle _jobHandle;
+
+        static UpdateJobManager()
+        {
+            Application.quitting += () => _instance?.Dispose();
+        }
 
         ~UpdateJobManager()
         {
