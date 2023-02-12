@@ -1,13 +1,14 @@
 using System;
-using Unity.Collections;
 using Unity.Jobs;
 
 namespace Gilzoide.UpdateManager.Jobs.Internal
 {
-    public class UpdateJobProviderCollection<TData> : JobProviderCollection<IJobUpdatable<TData>>, IDisposable
+    public class UpdateJobProvider<TData> : JobProviderCollection<IJobUpdatable<TData>>, IDisposable
         where TData : struct, IUpdateJob
     {
-        protected NativeArray<TData> _jobData;
+        public static int JobBatchSize = UpdateJobOptions.GetBatchSize<TData>();
+
+        protected JobDoubleBuffer<TData> _jobData = new JobDoubleBuffer<TData>();
 
         public TData GetData(IJobUpdatable<TData> provider)
         {
@@ -18,15 +19,16 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
 
         public void Dispose()
         {
-            NativeArrayExtensions.DisposeIfCreated(ref _jobData);
+            _jobData.Dispose();
         }
 
-        public JobHandle ScheduleJob(int batchSize)
+        public JobHandle ScheduleJob()
         {
+            _jobData.BackupData();
             return new UpdateJob<TData>
             {
-                Data = _jobData,
-            }.Schedule(_jobData.Length, batchSize);
+                Data = _jobData.Data,
+            }.Schedule(_jobData.Length, JobBatchSize);
         }
 
         protected override void Add(IJobUpdatable<TData> provider)
@@ -46,7 +48,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             RefreshRemoveProviders();
 
             int newDataSize = _dataProviders.Count + _dataProvidersToAdd.Count;
-            NativeArrayExtensions.Realloc(ref _jobData, newDataSize, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+            _jobData.Resize(newDataSize);
 
             RefreshAddProviders();
         }

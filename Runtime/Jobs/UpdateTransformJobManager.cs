@@ -9,7 +9,7 @@ namespace Gilzoide.UpdateManager.Jobs
         public static UpdateTransformJobManager<TData> Instance => _instance != null ? _instance : (_instance = new UpdateTransformJobManager<TData>());
         private static UpdateTransformJobManager<TData> _instance;
 
-        private readonly UpdateTransformJobProviderCollection<TData> _jobProvider = new UpdateTransformJobProviderCollection<TData>();
+        private readonly UpdateTransformJobProvider<TData> _jobProvider = new UpdateTransformJobProvider<TData>();
         private JobHandle _jobHandle;
 
         ~UpdateTransformJobManager()

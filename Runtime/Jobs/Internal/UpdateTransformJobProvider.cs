@@ -1,14 +1,16 @@
 using System;
-using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine.Jobs;
 
 namespace Gilzoide.UpdateManager.Jobs.Internal
 {
-    public class UpdateTransformJobProviderCollection<TData> : JobProviderCollection<ITransformJobUpdatable<TData>>, IDisposable
+    public class UpdateTransformJobProvider<TData> : JobProviderCollection<ITransformJobUpdatable<TData>>, IDisposable
         where TData : struct, IUpdateTransformJob
     {
-        protected NativeArray<TData> _jobData;
+        public static int JobBatchSize = UpdateJobOptions.GetBatchSize<TData>();
+        public static bool ReadOnlyTransforms = UpdateJobOptions.GetReadOnlyTransforms<TData>();
+
+        protected readonly JobDoubleBuffer<TData> _jobData = new JobDoubleBuffer<TData>();
         protected TransformAccessArray _jobTransforms;
 
         public TData GetData(ITransformJobUpdatable<TData> provider)
@@ -20,16 +22,25 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
 
         public void Dispose()
         {
-            NativeArrayExtensions.DisposeIfCreated(ref _jobData);
+            _jobData.Dispose();
             TransformAccessArrayExtensions.DisposeIfCreated(ref _jobTransforms);
         }
 
         public JobHandle ScheduleJob()
         {
-            return new UpdateTransformJob<TData>
+            _jobData.BackupData();
+            var job = new UpdateTransformJob<TData>
             {
-                Data = _jobData,
-            }.Schedule(_jobTransforms);
+                Data = _jobData.Data,
+            };
+            if (ReadOnlyTransforms)
+            {
+                return job.ScheduleReadOnly(_jobTransforms, JobBatchSize);
+            }
+            else
+            {
+                return job.Schedule(_jobTransforms);
+            }
         }
 
         protected override void Add(ITransformJobUpdatable<TData> provider)
@@ -56,7 +67,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             RefreshRemoveProviders();
 
             int newDataSize = _dataProviders.Count + _dataProvidersToAdd.Count;
-            NativeArrayExtensions.Realloc(ref _jobData, newDataSize, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+            _jobData.Resize(newDataSize);
 
             RefreshAddProviders();
         }

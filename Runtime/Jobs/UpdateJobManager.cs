@@ -9,7 +9,7 @@ namespace Gilzoide.UpdateManager.Jobs
         public static UpdateJobManager<TData> Instance => _instance != null ? _instance : (_instance = new UpdateJobManager<TData>());
         private static UpdateJobManager<TData> _instance;
 
-        private readonly UpdateJobProviderCollection<TData> _jobProvider = new UpdateJobProviderCollection<TData>();
+        private readonly UpdateJobProvider<TData> _jobProvider = new UpdateJobProvider<TData>();
         private JobHandle _jobHandle;
 
         ~UpdateJobManager()
@@ -29,7 +29,7 @@ namespace Gilzoide.UpdateManager.Jobs
                 return;
             }
 
-            _jobHandle = _jobProvider.ScheduleJob(64);
+            _jobHandle = _jobProvider.ScheduleJob();
         }
 
         public void Dispose()
