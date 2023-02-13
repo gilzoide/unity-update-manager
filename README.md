@@ -29,7 +29,9 @@ More info on Update Manager vs traditional Update: https://github.com/Menyus777/
 ## Caveats
 - `UpdateManager` doesn't have the concept of script execution order like Unity MonoBehaviours, so don't rely on execution order
 - `UpdateJobManager<>` and `UpdateTransformJobManager<>` use `NativeArray`s to manage all updatables' data.
-  Since Unity doesn't support nested `NativeArray`s, you cannot use `NativeArray`s in managed jobs.
+  Since Unity doesn't support nesting safe native containers, you cannot have `NativeArray` fields in managed jobs.
+
+  Unsafe collections from [Unity Collections package](https://docs.unity3d.com/Packages/com.unity.collections@latest) are supported, though.
 - Read-write transform jobs are only parallelized if the objects live in hierarchies with different root objects.
   This is a limitation of Unity's job system.
 
