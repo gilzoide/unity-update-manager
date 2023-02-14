@@ -6,8 +6,8 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
     public class JobDoubleBuffer<TData> : IDisposable
         where TData : struct
     {
-        public NativeArray<TData> Data => _data;
-        public NativeArray<TData>.ReadOnly Backup => _backup.AsReadOnly();
+        public UnsafeNativeList<TData> Data => _data;
+        public UnsafeNativeList<TData> Backup => _backup;
         public int Length => _data.Length;
 
         public TData this[int index]
@@ -16,19 +16,19 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             set => _data[index] = value;
         }
 
-        protected NativeArray<TData> _data;
-        protected NativeArray<TData> _backup;
+        protected UnsafeNativeList<TData> _data = new UnsafeNativeList<TData>(Allocator.Persistent);
+        protected UnsafeNativeList<TData> _backup = new UnsafeNativeList<TData>(Allocator.Persistent);
         protected bool _array1IsActive;
 
         public void Resize(int newSize)
         {
-            NativeArrayExtensions.Realloc(ref _data, newSize, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+            _data.Realloc(newSize);
         }
 
         public void Dispose()
         {
-            NativeArrayExtensions.DisposeIfCreated(ref _data);
-            NativeArrayExtensions.DisposeIfCreated(ref _backup);
+            _data.Dispose();
+            _backup.Dispose();
         }
 
         public void SwapBack(int index)
@@ -38,15 +38,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
 
         public void BackupData()
         {
-            if (_backup.Length == _data.Length)
-            {
-                _data.CopyTo(_backup);
-            }
-            else
-            {
-                NativeArrayExtensions.DisposeIfCreated(ref _backup);
-                _backup = new NativeArray<TData>(_data, Allocator.Persistent);
-            }
+            _backup.CopyFrom(_data);
         }
     }
 }
