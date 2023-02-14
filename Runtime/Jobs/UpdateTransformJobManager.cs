@@ -1,71 +1,48 @@
 using Gilzoide.UpdateManager.Jobs.Internal;
 using Unity.Jobs;
 using UnityEngine;
+using UnityEngine.Jobs;
 
 namespace Gilzoide.UpdateManager.Jobs
 {
-    public class UpdateTransformJobManager<TData> : IUpdatable
+    public class UpdateTransformJobManager<TData> : AUpdateJobManager<TData, ITransformJobUpdatable<TData>, UpdateTransformJobData<TData, ITransformJobUpdatable<TData>>>
         where TData : struct, IUpdateTransformJob
     {
+        public static int JobBatchSize = UpdateJobOptions.GetBatchSize<TData>();
+        public static bool ReadOnlyTransforms = UpdateJobOptions.GetReadOnlyTransforms<TData>();
+
         public static UpdateTransformJobManager<TData> Instance => _instance != null ? _instance : (_instance = new UpdateTransformJobManager<TData>());
         private static UpdateTransformJobManager<TData> _instance;
-
-        private readonly UpdateTransformJobProvider<TData> _jobProvider = new UpdateTransformJobProvider<TData>();
-        private JobHandle _jobHandle;
 
         static UpdateTransformJobManager()
         {
             Application.quitting += () => _instance?.Dispose();
         }
 
-        ~UpdateTransformJobManager()
+        protected override JobHandle ScheduleJob()
         {
-            Dispose();
-        }
-
-        public void ManagedUpdate()
-        {
-            _jobHandle.Complete();
-
-            _jobProvider.Refresh();
-
-            if (_jobProvider.Count == 0)
+            var job = new UpdateTransformJob<TData>
             {
-                Dispose();
-                return;
-            }
-
-            _jobHandle = _jobProvider.ScheduleJob();
-        }
-
-        public void Dispose()
-        {
-            _jobHandle.Complete();
-
-            _jobProvider.Dispose();
-
-            UpdateJobTime.Instance.UnregisterUpdate();
-            UpdateManager.Instance.Unregister(this);
-        }
-
-        public void Register(ITransformJobUpdatable<TData> provider)
-        {
-            _jobProvider.Add(provider, out bool shouldStartUpdating);
-            if (shouldStartUpdating)
+                Data = _jobData.Data,
+            };
+            if (ReadOnlyTransforms)
             {
-                UpdateJobTime.Instance.RegisterUpdate();
-                UpdateManager.Instance.Register(this);
+                return job.ScheduleReadOnly(_jobData.Transforms, JobBatchSize);
             }
+            else
+            {
+                return job.Schedule(_jobData.Transforms);
+            };
         }
 
-        public void Unregister(ITransformJobUpdatable<TData> provider)
+        protected struct UpdateTransformJob : IJobParallelForTransform
         {
-            _jobProvider.Remove(provider);
-        }
+            public UnsafeNativeList<TData> Data;
 
-        public TData GetData(ITransformJobUpdatable<TData> provider)
-        {
-            return _jobProvider.GetData(provider);
+            public unsafe void Execute(int index, TransformAccess transform)
+            {
+                Data.ItemRefAt(index).Execute(transform);
+            }
         }
     }
 }

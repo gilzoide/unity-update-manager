@@ -4,68 +4,35 @@ using UnityEngine;
 
 namespace Gilzoide.UpdateManager.Jobs
 {
-    public class UpdateJobManager<TData> : IUpdatable
+    public class UpdateJobManager<TData> : AUpdateJobManager<TData, IJobUpdatable<TData>, UpdateJobData<TData, IJobUpdatable<TData>>>
         where TData : struct, IUpdateJob
     {
+        public static int JobBatchSize = UpdateJobOptions.GetBatchSize<TData>();
+
         public static UpdateJobManager<TData> Instance => _instance != null ? _instance : (_instance = new UpdateJobManager<TData>());
         private static UpdateJobManager<TData> _instance;
-
-        private readonly UpdateJobProvider<TData> _jobProvider = new UpdateJobProvider<TData>();
-        private JobHandle _jobHandle;
 
         static UpdateJobManager()
         {
             Application.quitting += () => _instance?.Dispose();
         }
 
-        ~UpdateJobManager()
+        protected override JobHandle ScheduleJob()
         {
-            Dispose();
-        }
-
-        public void ManagedUpdate()
-        {
-            _jobHandle.Complete();
-
-            _jobProvider.Refresh();
-
-            if (_jobProvider.Count == 0)
+            return new UpdateJob
             {
-                Dispose();
-                return;
-            }
-
-            _jobHandle = _jobProvider.ScheduleJob();
+                Data = _jobData.Data,
+            }.Schedule(_jobData.Length, JobBatchSize);
         }
 
-        public void Dispose()
+        protected struct UpdateJob : IJobParallelFor
         {
-            _jobHandle.Complete();
+            public UnsafeNativeList<TData> Data;
 
-            _jobProvider.Dispose();
-
-            UpdateJobTime.Instance.UnregisterUpdate();
-            UpdateManager.Instance.Unregister(this);
-        }
-
-        public void Register(IJobUpdatable<TData> provider)
-        {
-            _jobProvider.Add(provider, out bool shouldStartUpdating);
-            if (shouldStartUpdating)
+            public unsafe void Execute(int index)
             {
-                UpdateJobTime.Instance.RegisterUpdate();
-                UpdateManager.Instance.Register(this);
+                Data.ItemRefAt(index).Execute();
             }
-        }
-
-        public void Unregister(IJobUpdatable<TData> provider)
-        {
-            _jobProvider.Remove(provider);
-        }
-
-        public TData GetData(IJobUpdatable<TData> provider)
-        {
-            return _jobProvider.GetData(provider);
         }
     }
 }

@@ -3,7 +3,7 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
-namespace Gilzoide.UpdateManager
+namespace Gilzoide.UpdateManager.Jobs.Internal
 {
     public unsafe struct UnsafeNativeList<T> : IDisposable where T : struct
     {
