@@ -1,12 +1,10 @@
-using UnityEngine;
+using Gilzoide.UpdateManager.Jobs.Internal;
 
 namespace Gilzoide.UpdateManager.Jobs
 {
-    public interface ITransformJobUpdatable<TData>
+    public interface ITransformJobUpdatable<TData> : IInitialTransformJobDataProvider<TData>
         where TData : struct, IUpdateTransformJob
     {
-        Transform Transform { get; }
-        TData InitialJobData { get; }
     }
 
     public static class ITransformJobUpdatableExtensions

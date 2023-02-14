@@ -1,9 +1,10 @@
+using Gilzoide.UpdateManager.Jobs.Internal;
+
 namespace Gilzoide.UpdateManager.Jobs
 {
-    public interface IJobUpdatable<TData>
+    public interface IJobUpdatable<TData> : IInitialJobDataProvider<TData>
         where TData : struct, IUpdateJob
     {
-        TData InitialJobData { get; }
     }
 
     public static class IJobUpdatableExtensions
