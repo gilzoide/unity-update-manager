@@ -38,7 +38,6 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
 
         public void BackupData()
         {
-            _backup.Realloc(_data.Length);
             _backup.CopyFrom(_data);
         }
     }

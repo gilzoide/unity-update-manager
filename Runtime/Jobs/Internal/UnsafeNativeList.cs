@@ -94,12 +94,8 @@ namespace Gilzoide.UpdateManager
 
         public void CopyFrom(UnsafeNativeList<T> other)
         {
+            Realloc(other.Length, false);
             UnsafeUtility.MemCpy(Buffer, other.Buffer, BufferLength);
-        }
-
-        public void CopyTo(UnsafeNativeList<T> other)
-        {
-            other.CopyFrom(this);
         }
     }
 }
