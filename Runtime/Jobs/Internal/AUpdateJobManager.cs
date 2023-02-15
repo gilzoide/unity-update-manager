@@ -1,14 +1,18 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Jobs;
+using UnityEngine;
 
 namespace Gilzoide.UpdateManager.Jobs.Internal
 {
-    public abstract class AUpdateJobManager<TData, TDataProvider, TJobData> : IUpdatable, IDisposable
+    public abstract class AUpdateJobManager<TData, TDataProvider, TJobData> : IJobManager, IUpdatable, IDisposable
         where TData : struct
         where TDataProvider : IInitialJobDataProvider<TData>
         where TJobData : UpdateJobData<TData, TDataProvider>, new()
     {
+        public event Action<JobHandle> OnJobScheduled;
+
         protected readonly Dictionary<TDataProvider, int> _providerIndexMap = new Dictionary<TDataProvider, int>();
         protected readonly List<TDataProvider> _dataProviders = new List<TDataProvider>();
         protected readonly List<TDataProvider> _dataProvidersToAdd = new List<TDataProvider>();
@@ -17,7 +21,18 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         protected bool _isDirty = true;
         protected JobHandle _jobHandle;
 
-        protected abstract JobHandle ScheduleJob();
+        protected abstract JobHandle ScheduleJob(JobHandle dependsOn);
+
+        private readonly IJobManager[] _dependencyManagers;
+        private NativeArray<JobHandle> _dependencyJobHandles;
+        private int _lastProcessedFrame;
+        private int _dependenciesScheduledCount;
+        private bool _isPendingUpdate;
+
+        public AUpdateJobManager()
+        {
+            _dependencyManagers = UpdateJobOptions.GetDependsOnManagers<TData>();
+        }
 
         ~AUpdateJobManager()
         {
@@ -41,7 +56,9 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             }
 
             _jobData.BackupData();
-            _jobHandle = ScheduleJob();
+
+            _isPendingUpdate = false;
+            ScheduleJobIfDependenciesMet();
         }
 
         public void Register(TDataProvider provider)
@@ -53,8 +70,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
 
             if (_dataProviders.Count == 0 && _dataProvidersToAdd.Count == 0)
             {
-                UpdateJobTime.Instance.RegisterUpdate();
-                UpdateManager.Instance.Register(this);
+                StartUpdating();
             }
 
             _dataProvidersToAdd.Add(provider);
@@ -89,8 +105,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             _dataProvidersToRemove.Clear();
             _isDirty = false;
 
-            UpdateJobTime.Instance.UnregisterUpdate();
-            UpdateManager.Instance.Unregister(this);
+            StopUpdating();
         }
 
         protected void RefreshProviders()
@@ -140,6 +155,65 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
                 _jobData.Add(provider, index);
             }
             _dataProvidersToAdd.Clear();
+        }
+
+        private void StartUpdating()
+        {
+            UpdateJobTime.Instance.RegisterUpdate();
+            UpdateManager.Instance.Register(this);
+
+            for (int i = 0; i < _dependencyManagers.Length; i++)
+            {
+                _dependencyManagers[i].OnJobScheduled += ScheduleJobIfDependenciesMet;
+            }
+            _dependencyJobHandles = new NativeArray<JobHandle>(_dependencyManagers.Length, Allocator.Persistent);
+        }
+
+        private void StopUpdating()
+        {
+            UpdateJobTime.Instance.UnregisterUpdate();
+            UpdateManager.Instance.Unregister(this);
+
+            for (int i = 0; i < _dependencyManagers.Length; i++)
+            {
+                _dependencyManagers[i].OnJobScheduled -= ScheduleJobIfDependenciesMet;
+            }
+            _dependencyJobHandles.Dispose();
+        }
+
+        private void ScheduleJobIfDependenciesMet()
+        {
+            if (!AreAllDependenciesFulfilled())
+            {
+                return;
+            }
+
+            _isPendingUpdate = true;
+            _jobHandle = ScheduleJob(JobHandle.CombineDependencies(_dependencyJobHandles));
+            OnJobScheduled?.Invoke(_jobHandle);
+        }
+
+        private void ScheduleJobIfDependenciesMet(JobHandle dependecyJobHandle)
+        {
+            MarkDependencyMet();
+            _dependencyJobHandles[_dependenciesScheduledCount - 1] = dependecyJobHandle;
+            ScheduleJobIfDependenciesMet();
+        }
+
+        private bool AreAllDependenciesFulfilled()
+        {
+            return !_isPendingUpdate && _dependenciesScheduledCount >= _dependencyJobHandles.Length;
+        }
+
+        private void MarkDependencyMet()
+        {
+            int currentFrame = Time.frameCount;
+            if (currentFrame != _lastProcessedFrame)
+            {
+                _dependenciesScheduledCount = 0;
+                _lastProcessedFrame = currentFrame;
+            }
+            _dependenciesScheduledCount++;
         }
     }
 }

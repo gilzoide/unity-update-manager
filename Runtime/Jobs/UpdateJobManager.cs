@@ -17,12 +17,12 @@ namespace Gilzoide.UpdateManager.Jobs
             Application.quitting += () => _instance?.Dispose();
         }
 
-        protected override JobHandle ScheduleJob()
+        protected override JobHandle ScheduleJob(JobHandle dependsOn)
         {
             return new UpdateJob
             {
                 Data = _jobData.Data,
-            }.Schedule(_jobData.Length, JobBatchSize);
+            }.Schedule(_jobData.Length, JobBatchSize, dependsOn);
         }
 
         protected struct UpdateJob : IJobParallelFor

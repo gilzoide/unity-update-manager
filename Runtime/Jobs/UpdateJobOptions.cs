@@ -1,4 +1,6 @@
+using System;
 using System.Reflection;
+using Gilzoide.UpdateManager.Jobs.Internal;
 
 namespace Gilzoide.UpdateManager.Jobs
 {
@@ -23,6 +25,50 @@ namespace Gilzoide.UpdateManager.Jobs
         {
             return typeof(TData).GetCustomAttribute<UpdateJobOptionsAttribute>() is UpdateJobOptionsAttribute options
                 && options.ReadOnlyTransforms;
+        }
+
+        public static Type[] GetDependsOn<TData>()
+        {
+            if (typeof(TData).GetCustomAttribute<DependsOnAttribute>() is DependsOnAttribute dependsOn
+                && dependsOn.DependencyTypes?.Length > 0)
+            {
+                return dependsOn.DependencyTypes;
+            }
+            else
+            {
+                return Array.Empty<Type>();
+            }
+        }
+
+        public static IJobManager[] GetDependsOnManagers<TData>()
+        {
+            Type[] dependencyTypes = GetDependsOn<TData>();
+            if (dependencyTypes.Length == 0)
+            {
+                return Array.Empty<IJobManager>();
+            }
+
+            var managers = new IJobManager[dependencyTypes.Length];
+            for (int i = 0; i < dependencyTypes.Length; i++)
+            {
+                Type type = dependencyTypes[i];
+                if (type.IsIUpdateJob())
+                {
+                    managers[i] = (IJobManager) typeof(UpdateJobManager<>).MakeGenericType(type).GetProperty("Instance").GetValue(null);
+                }
+                else if (type.IsIUpdateTransformJob())
+                {
+                    managers[i] = (IJobManager) typeof(UpdateTransformJobManager<>).MakeGenericType(type).GetProperty("Instance").GetValue(null);
+                }
+                else
+                {
+                    throw new ArgumentException(
+                        $"Dependency type '{type}' must implement IUpdateJob or IUpdateTransformJob",
+                        nameof(DependsOnAttribute.DependencyTypes)
+                    );
+                }
+            }
+            return managers;
         }
     }
 }
