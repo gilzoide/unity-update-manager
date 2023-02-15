@@ -21,7 +21,7 @@ namespace Gilzoide.UpdateManager.Jobs
 
         protected override JobHandle ScheduleJob(JobHandle dependsOn)
         {
-            var job = new UpdateTransformJob<TData>
+            var job = new UpdateTransformJob
             {
                 Data = _jobData.Data,
             };
