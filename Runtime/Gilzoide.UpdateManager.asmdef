@@ -1,9 +1,7 @@
 {
     "name": "Gilzoide.UpdateManager",
     "rootNamespace": "Gilzoide.UpdateManager",
-    "references": [
-        "Unity.Burst"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": true,
@@ -11,12 +9,6 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [
-        {
-            "name": "com.unity.burst",
-            "expression": "",
-            "define": "HAVE_BURST"
-        }
-    ],
+    "versionDefines": [],
     "noEngineReferences": false
 }
