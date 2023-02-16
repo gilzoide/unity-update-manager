@@ -159,6 +159,8 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
 
         private void StartUpdating()
         {
+            _isPendingUpdate = true;
+
             UpdateJobTime.Instance.RegisterUpdate();
             UpdateManager.Instance.Register(this);
 
