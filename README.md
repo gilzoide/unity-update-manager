@@ -12,6 +12,8 @@ More info on Update Manager vs traditional Update: https://github.com/Menyus777/
   
   Remember to unregister the objects with `UpdateManager.Instance.Unregister` when necessary.
 - Inherit `AUpdateManagerBehaviour` to automatically register/unregister MonoBehaviours in `UpdateManager` in their `OnEnable`/`OnDisable` messages
+
+Job System:
 - Use `UpdateJobManager<>` to run jobs every frame using Unity's Job system
 - Use `UpdateTransformJobManager<>` to run jobs with `TransformAccess` every frame using Unity's Job system, so you can change your objects' transforms from jobs
 - Job data may be modified from within jobs and fetched anytime.
@@ -24,6 +26,7 @@ More info on Update Manager vs traditional Update: https://github.com/Menyus777/
 - `UpdateJobTime` singleton class with information from Unity's `Time` class that you can access from within jobs (`deltaTime`, `time`, etc...)
 - Configurable job batch size using `[UpdateJobOptions(BatchSize = ...)]` attribute in job structs.
   This is ignored in read-write transform jobs.
+- Add dependencies between managed jobs using `[DependsOn(typeof(MyJobDependency1), ...)]`
 
 
 ## Caveats
