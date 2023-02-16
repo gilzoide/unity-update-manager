@@ -44,6 +44,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             {
                 UnsafeUtility.Free(Buffer, Allocator);
                 Buffer = null;
+                Length = 0;
             }
         }
 
@@ -87,6 +88,10 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             if (index < 0 || index >= Length)
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            if (Buffer == null)
+            {
+                throw new NullReferenceException("Buffer is null");
             }
 #endif
             return ref UnsafeUtility.ArrayElementAsRef<T>(Buffer, index);
