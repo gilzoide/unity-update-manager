@@ -19,20 +19,15 @@ namespace Gilzoide.UpdateManager.Jobs
             Application.quitting += () => _instance?.Dispose();
         }
 
-        protected override JobHandle ScheduleJob()
+        protected override JobHandle ScheduleJob(JobHandle dependsOn)
         {
             var job = new UpdateTransformJob<TData>
             {
                 Data = _jobData.Data,
             };
-            if (ReadOnlyTransforms)
-            {
-                return job.ScheduleReadOnly(_jobData.Transforms, JobBatchSize);
-            }
-            else
-            {
-                return job.Schedule(_jobData.Transforms);
-            };
+            return ReadOnlyTransforms
+                ? job.ScheduleReadOnly(_jobData.Transforms, JobBatchSize, dependsOn)
+                : job.Schedule(_jobData.Transforms, dependsOn);
         }
 
         protected struct UpdateTransformJob : IJobParallelForTransform
