@@ -8,6 +8,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         where TDataProvider : IInitialJobDataProvider<TData>
     {
         public UnsafeNativeList<TData> Data => _data;
+        public ref UnsafeNativeList<TData> DataRef => ref _data;
         public UnsafeNativeList<TData> Backup => _backup;
         public int Length => _data.Length;
         public TData this[int index] => _backup[index];

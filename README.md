@@ -35,6 +35,7 @@ Job System:
   This is a limitation of Unity's job system.
 
   Read-only transform jobs, marked by the `[ReadOnlyTransforms]` attribute, don't have this restriction.
+- Managed `IUpdateTransformJob` structs are not Burst-compilable.
 
 
 ## How to install
