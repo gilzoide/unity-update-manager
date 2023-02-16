@@ -23,8 +23,9 @@ namespace Gilzoide.UpdateManager.Jobs
 
         public static bool GetReadOnlyTransforms<TData>()
         {
-            return typeof(TData).GetCustomAttribute<UpdateJobOptionsAttribute>() is UpdateJobOptionsAttribute options
-                && options.ReadOnlyTransforms;
+            return typeof(TData).GetCustomAttribute<ReadOnlyTransformsAttribute>() != null
+                || (typeof(TData).GetCustomAttribute<UpdateJobOptionsAttribute>() is UpdateJobOptionsAttribute options
+                    && options.ReadOnlyTransforms);
         }
 
         public static Type[] GetDependsOn<TData>()

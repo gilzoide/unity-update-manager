@@ -34,7 +34,7 @@ Job System:
 - Read-write transform jobs are only parallelized if the objects live in hierarchies with different root objects.
   This is a limitation of Unity's job system.
 
-  Read-only transform jobs, marked by the `[UpdateJobOptions(ReadOnlyTransforms = true)]` attribute, don't have this restriction.
+  Read-only transform jobs, marked by the `[ReadOnlyTransforms]` attribute, don't have this restriction.
 
 
 ## How to install
