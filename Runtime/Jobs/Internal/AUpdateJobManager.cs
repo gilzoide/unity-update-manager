@@ -180,7 +180,10 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             {
                 _dependencyManagers[i].OnJobScheduled -= ScheduleJobIfDependenciesMet;
             }
-            _dependencyJobHandles.Dispose();
+            if (_dependencyJobHandles.IsCreated)
+            {
+                _dependencyJobHandles.Dispose();
+            }
         }
 
         private void ScheduleJobIfDependenciesMet()
