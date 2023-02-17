@@ -11,46 +11,47 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         public static readonly int AlignOfT = UnsafeUtility.AlignOf<T>();
 
         [NativeDisableUnsafePtrRestriction]
-        public void* Buffer;
-        public int Length;
-        public Allocator Allocator;
+        private void* _buffer;
+        private int _length;
+        private Allocator Allocator;
 
-        public int BufferLength => Length * SizeOfT;
+        public int Length => _length;
+        public int BufferLength => _length * SizeOfT;
 
         public T this[int index]
         {
-            get => ItemRefAt(index);
-            set => ItemRefAt(index) = value;
+            get => UnsafeUtility.ReadArrayElement<T>(_buffer, index);
+            set => UnsafeUtility.WriteArrayElement<T>(_buffer, index, value);
         }
 
         public UnsafeNativeList(Allocator allocator)
         {
-            Buffer = null;
-            Length = 0;
+            _buffer = null;
+            _length = 0;
             Allocator = allocator;
         }
 
         public UnsafeNativeList(int length, Allocator allocator)
         {
-            Buffer = null;
-            Length = 0;
+            _buffer = null;
+            _length = 0;
             Allocator = allocator;
             Realloc(length, false);
         }
 
         public void Dispose()
         {
-            if (Buffer != null)
+            if (_buffer != null)
             {
-                UnsafeUtility.Free(Buffer, Allocator);
-                Buffer = null;
-                Length = 0;
+                UnsafeUtility.Free(_buffer, Allocator);
+                _buffer = null;
+                _length = 0;
             }
         }
 
         public void Realloc(int newLength, bool keepData = true)
         {
-            if (newLength == Length)
+            if (newLength == _length)
             {
                 return;
             }
@@ -61,46 +62,46 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             }
 
             void* newBuffer = UnsafeUtility.Malloc(newLength * SizeOfT, AlignOfT, Allocator);
-            if (Buffer != null)
+            if (_buffer != null)
             {
                 if (keepData)
                 {
-                    UnsafeUtility.MemCpy(newBuffer, Buffer, Mathf.Min(Length, newLength) * SizeOfT);
+                    UnsafeUtility.MemCpy(newBuffer, _buffer, Mathf.Min(_length, newLength) * SizeOfT);
                 }
                 Dispose();
             }
-            Buffer = newBuffer;
-            Length = newLength;
+            _buffer = newBuffer;
+            _length = newLength;
         }
 
         public void SwapBack(int index)
         {
-            int lastIndex = Length - 1;
+            int lastIndex = _length - 1;
             if (lastIndex > 0 && lastIndex != index)
             {
-                ItemRefAt(index) = ItemRefAt(Length - 1);
+                ItemRefAt(index) = ItemRefAt(_length - 1);
             }
         }
 
         public ref T ItemRefAt(int index)
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (index < 0 || index >= Length)
+            if (index < 0 || index >= _length)
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
-            if (Buffer == null)
+            if (_buffer == null)
             {
                 throw new NullReferenceException("Buffer is null");
             }
 #endif
-            return ref UnsafeUtility.ArrayElementAsRef<T>(Buffer, index);
+            return ref UnsafeUtility.ArrayElementAsRef<T>(_buffer, index);
         }
 
         public void CopyFrom(UnsafeNativeList<T> other)
         {
-            Realloc(other.Length, false);
-            UnsafeUtility.MemCpy(Buffer, other.Buffer, BufferLength);
+            Realloc(other._length, false);
+            UnsafeUtility.MemCpy(_buffer, other._buffer, BufferLength);
         }
     }
 }
