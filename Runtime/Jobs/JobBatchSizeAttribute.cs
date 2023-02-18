@@ -2,6 +2,9 @@ using System;
 
 namespace Gilzoide.UpdateManager.Jobs
 {
+    /// <summary>
+    /// Add this to a managed job struct type for setting its job batch size.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Struct)]
     public class JobBatchSizeAttribute : Attribute
     {
