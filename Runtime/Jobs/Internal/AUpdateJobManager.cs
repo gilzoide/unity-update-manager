@@ -22,10 +22,10 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
 
         protected readonly Dictionary<TDataProvider, int> _providerIndexMap = new Dictionary<TDataProvider, int>();
         protected readonly List<TDataProvider> _dataProviders = new List<TDataProvider>();
-        protected readonly List<TDataProvider> _dataProvidersToAdd = new List<TDataProvider>();
+        protected readonly HashSet<TDataProvider> _dataProvidersToAdd = new HashSet<TDataProvider>();
         protected readonly SortedSet<int> _dataProvidersToRemove = new SortedSet<int>();
         protected readonly TJobData _jobData = new TJobData();
-        protected bool _isDirty = true;
+        protected bool _isDirty => _dataProvidersToAdd.Count > 0 || _dataProvidersToRemove.Count > 0;
         protected JobHandle _jobHandle;
 
         protected abstract JobHandle ScheduleJob(JobHandle dependsOn);
@@ -53,7 +53,6 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             if (_isDirty)
             {
                 RefreshProviders();
-                _isDirty = false;
             }
 
             if (_dataProviders.Count == 0)
@@ -77,18 +76,15 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         /// </remarks>
         public void Register(TDataProvider provider)
         {
-            if (_providerIndexMap.ContainsKey(provider))
+            if (_providerIndexMap.ContainsKey(provider) || !_dataProvidersToAdd.Add(provider))
             {
                 return;
             }
 
-            if (_dataProviders.Count == 0 && _dataProvidersToAdd.Count == 0)
+            if (_dataProviders.Count == 0 && _dataProvidersToAdd.Count == 1)
             {
                 StartUpdating();
             }
-
-            _dataProvidersToAdd.Add(provider);
-            _isDirty = true;
         }
 
         /// <summary>
@@ -100,10 +96,10 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         /// </remarks>
         public void Unregister(TDataProvider provider)
         {
+            _dataProvidersToAdd.Remove(provider);
             if (_providerIndexMap.TryGetValue(provider, out int index))
             {
                 _dataProvidersToRemove.Add(index);
-                _isDirty = true;
             }
         }
 
@@ -139,7 +135,6 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             _dataProviders.Clear();
             _dataProvidersToAdd.Clear();
             _dataProvidersToRemove.Clear();
-            _isDirty = false;
 
             StopUpdating();
         }
