@@ -10,9 +10,9 @@ More info on Update Manager vs traditional Update: https://github.com/Menyus777/
 
 ## Features
 - Use `UpdateManager` to call objects' `ManagedUpdate` method, bypassing Unity's native <-> C# interop
-- Both `MonoBehaviour` and pure C# classes are supported, just implement `IUpdatable` interface and register the object to be updated using `UpdateManager.Instance.Register`.
+- Both `MonoBehaviour` and pure C# classes are supported, just implement `IUpdatable` interface and register the object to be updated using `IUpdatable.RegisterInManager` extension method.
   
-  Remember to unregister the objects with `UpdateManager.Instance.Unregister` when necessary.
+  Remember to unregister the objects with `IUpdatable.UnregisterInManager` when necessary.
 - Inherit `AUpdateManagerBehaviour` to automatically register/unregister MonoBehaviours in `UpdateManager` in their `OnEnable`/`OnDisable` messages
 
 Job System:
@@ -21,14 +21,14 @@ Job System:
 - Job data may be modified from within jobs and fetched anytime.
   
   This package uses double buffering to let you read values even while jobs are running and modifying data.
-- Both `MonoBehaviour` and pure C# classes are supported, just implement `IJobUpdatable<MyIUpdateJobStruct>` or `ITransformJobUpdatable<MyIUpdateTransformJobStruct>` interface and register the object to be updated using `UpdateJobManager<MyIUpdateJobStruct>.Instance.Register` or `UpdateTransformJobManager<MyIUpdateTransformJobStruct>.Instance.Register`.
+- Both `MonoBehaviour` and pure C# classes are supported, just implement `IJobUpdatable<MyIUpdateJobStruct>` or `ITransformJobUpdatable<MyIUpdateTransformJobStruct>` interface and register the object to be updated using `IJobUpdatable.RegisterInManager` or `ITransformJobUpdatable.RegisterInManager` extension methods.
   
-  Remember to unregister the objects with `UpdateJobManager<MyIUpdateJobStruct>.Instance.Unregister` or `UpdateTransformJobManager<MyIUpdateTransformJobStruct>.Instance.Unregister` when necessary.
+  Remember to unregister the objects with `IJobUpdatable.UnregisterInManager` or `ITransformJobUpdatable.UnregisterInManager` when necessary.
 - Inherit `AJobBehaviour<MyIUpdateTransformJobStruct>` to automatically register/unregister MonoBehaviours in `UpdateTransformJobManager<MyIUpdateTransformJobStruct>` in their `OnEnable`/`OnDisable` messages
 - Burst compilation is supported by implementing `IJobUpdatable<MyIUpdateJobStruct, BurstUpdateJob<MyIUpdateJobStruct>>` or `ITransformJobUpdatable<MyIUpdateTransformJobStruct, BurstUpdateTransformJob<MyIUpdateTransformJobStruct>>`.
   This also applies for `AJobBehaviour<MyIUpdateTransformJobStruct, BurstUpdateJob<MyIUpdateTransformJobStruct>>`
 - `UpdateJobTime` singleton class with information from Unity's `Time` class that you can access from within jobs (`deltaTime`, `time`, etc...)
-- Configurable job batch size using `[UpdateJobOptions(BatchSize = ...)]` attribute in job structs.
+- Configurable job batch size using `[JobBatchSize(...)]` attribute in job structs.
   This is ignored in read-write transform jobs.
 - Add dependencies between managed jobs using `[DependsOn(typeof(MyJobDependency1), ...)]`
 
@@ -42,8 +42,7 @@ Job System:
 
 
 ## How to install
-This package is available on the [openupm registry](https://openupm.com/)
-and can be installed using the [openupm-cli](https://github.com/openupm/openupm-cli):
+This package is available on the [openupm registry](https://openupm.com/) and can be installed using the [openupm-cli](https://github.com/openupm/openupm-cli):
 
 ```
 openupm add com.gilzoide.update-manager
@@ -58,139 +57,146 @@ https://github.com/gilzoide/unity-update-manager.git#1.0.0
 
 
 ## How to use
-- `UpdateManager` + `MonoBehaviour`:
-  ```cs
-  using Gilzoide.UpdateManager;
-  using UnityEngine;
+### `UpdateManager` + `MonoBehaviour`:
+```cs
+using Gilzoide.UpdateManager;
+using UnityEngine;
 
-  public class MyManagedUpdatableBehaviour : AUpdateManagerBehaviour
-  {
-      public override void ManagedUpdate()
-      {
-          Debug.Log("This will be called every frame!");
-      }
-  }
-  ```
-- `UpdateManager` with pure C# class:
-  ```cs
-  using Gilzoide.UpdateManager;
-  using UnityEngine;
+public class MyManagedUpdatableBehaviour : AUpdateManagerBehaviour
+{
+    public override void ManagedUpdate()
+    {
+        Debug.Log("This will be called every frame!");
+    }
+}
+```
 
-  public class MyUpdatable : IUpdatable
-  {
-      public void ManagedUpdate()
-      {
-          Debug.Log("This will also be called every frame!");
-      }
+### `UpdateManager` with pure C# class:
+```cs
+using Gilzoide.UpdateManager;
+using UnityEngine;
 
-      // call this when you want Updates to start running
-      public void StartUpdating()
-      {
-          UpdateManager.Instance.Register(this);
-          // Alias: `this.RegisterInManager()`
-      }
+public class MyUpdatable : IUpdatable
+{
+    public void ManagedUpdate()
+    {
+        Debug.Log("This will also be called every frame!");
+    }
 
-      // call this when necessary to stop the updates
-      public void StopUpdating()
-      {
-          UpdateManager.Instance.Unregister(this);
-          // Alias: `this.UnregisterInManager()`
-      }
-  }
-  ```
-- `UpdateTransformJobManager` + `MonoBehaviour`
-  ```cs
-  using System.Collections;
-  using Gilzoide.UpdateManager.Jobs;
-  using UnityEngine;
-  using UnityEngine.Jobs;
+    // call this when you want Updates to start running
+    public void StartUpdating()
+    {
+        this.RegisterInManager();
+        // ^ alias for `UpdateManager.Instance.Register(this)`
+    }
 
-  // 1. Create the Job struct
-  public struct MyMoveJob : IUpdateTransformJob
-  {
-      public Vector3 Direction;
-      public float Speed;
-      public bool SomethingHappened;
+    // call this when necessary to stop the updates
+    public void StopUpdating()
+    {
+        this.UnregisterInManager();
+        // ^ alias for `UpdateManager.Instance.Unregister(this)`
+    }
+}
+```
 
-      public void Execute(TransformAccess transform)
-      {
-          Debug.Log("This will be called every frame using Unity's Job system");
-          // This runs outside of the Main Thread, so
-          // we need to use `UpdateJobTime` instead of `Time`
-          float deltaTime = UpdateJobTime.Instance.deltaTime;
-          // You can modify the Transform in jobs!
-          transform.localPosition += Direction * Speed * deltaTime;
-          // You can modify the struct's value and fetch them later!
-          SomethingHappened = true;
-      }
-  }
+### `UpdateTransformJobManager` + `MonoBehaviour`
+```cs
+using System.Collections;
+using Gilzoide.UpdateManager.Jobs;
+using UnityEngine;
+using UnityEngine.Jobs;
 
-  // 2. Create the job-updated behaviour
-  public class MyJobifiedBehaviour : AJobBehaviour<MyMoveJob>
-  {
-      // set the parameters in Unity's Inspector
-      public Vector3 Direction;
-      public float Speed;
+// 1. Create the Job struct
+public struct MoveJob : IUpdateTransformJob
+{
+    public Vector3 Direction;
+    public float Speed;
+    public bool SomethingHappened;
 
-      // (optional) Set the data passed to the first job run
-      public override MyMoveJob InitialJobData => new MyMoveJob
-      {
-          Direction = Direction,
-          Speed = Speed,
-      };
+    public void Execute(TransformAccess transform)
+    {
+        Debug.Log("This will be called every frame using Unity's Job system");
+        // This runs outside of the Main Thread, so
+        // we need to use `UpdateJobTime` instead of `Time`
+        float deltaTime = UpdateJobTime.Instance.deltaTime;
+        // You can modify the Transform in jobs!
+        transform.localPosition += Direction * Speed * deltaTime;
+        // You can modify the struct's value and fetch them later!
+        SomethingHappened = true;
+    }
+}
 
-      IEnumerator Start()
-      {
-          // wait a frame to see if something happened
-          yield return null;
-          // use the `JobData` property to fetch the current data
-          MyMoveJob currentData = JobData;
-          // should print "Something happened: true"
-          Debug.Log("Something happened: " + currentData.SomethingHappened);
-      }
-  }
-  ```
-- `UpdateJobManager` + pure C# class
-  ```cs
-  using Gilzoide.UpdateManager.Jobs;
-  using UnityEngine;
+// 2. Create the job-updated behaviour
+// Inherit `AJobBehaviour<MoveJob, BurstUpdateTransformJob<MoveJob>>`
+// if you want to Burst compile the job
+public class MyJobifiedBehaviour : AJobBehaviour<MoveJob>
+{
+    // set the parameters in Unity's Inspector
+    public Vector3 Direction;
+    public float Speed;
 
-  // 1. Create the Job struct
-  public struct MyCountJob : IUpdateJob
-  {
-      public int Count;
+    // (optional) Set the data passed to the first job run
+    public override MoveJob InitialJobData => new MoveJob
+    {
+        Direction = Direction,
+        Speed = Speed,
+    };
 
-      public void Execute()
-      {
-          Debug.Log("This will be called every frame using Unity's Job system");
-          Count++;
-      }
-  }
+    IEnumerator Start()
+    {
+        // wait a frame to see if something happened
+        yield return null;
+        // use the `JobData` property to fetch the current data
+        MoveJob currentData = JobData;
+        // should print "Something happened: true"
+        Debug.Log("Something happened: " + currentData.SomethingHappened);
+    }
+}
+```
 
-  // 2. Create the job-updated class
-  public class MyJobifiedBehaviour : IJobUpdatable<MyCountJob>
-  {
-      // Set the data passed to the first job run
-      public MyCountJob InitialJobData => default;
+### `UpdateJobManager` + pure C# class
+```cs
+using Gilzoide.UpdateManager.Jobs;
+using UnityEngine;
 
-      // call this when you want Updates to start running
-      public void StartUpdating()
-      {
-          UpdateJobManager<MyCountJob>.Instance.Register(this);
-          // Alias: `this.RegisterInManager()`
-      }
+// 1. Create the Job struct
+public struct CountJob : IUpdateJob
+{
+    public int Count;
 
-      // call this when necessary to stop the updates
-      public void StopUpdating()
-      {
-          UpdateJobManager<MyCountJob>.Instance.Unregister(this);
-          // Alias: `this.UnregisterInManager()`
-      }
+    public void Execute()
+    {
+        Debug.Log("This will be called every frame using Unity's Job system");
+        Count++;
+    }
+}
 
-      // fetch current data using `this.GetJobData`
-      public int CurrentCount => this.GetJobData().Count;
-  }
-  ```
+// 2. Create the job-updated class
+// Implement `IJobUpdatable<CountJob, BurstUpdateTransformJob<CountJob>>`
+// if you want to Burst compile the job
+public class MyJobifiedBehaviour : IJobUpdatable<CountJob>
+{
+    // Set the data passed to the first job run
+    public CountJob InitialJobData => default;
+
+    // call this when you want Updates to start running
+    public void StartUpdating()
+    {
+        this.RegisterInManager();
+        // ^ alias for `UpdateJobManager<CountJob>.Instance.Register(this)`
+    }
+
+    // call this when necessary to stop the updates
+    public void StopUpdating()
+    {
+        this.UnregisterInManager();
+        // ^ alias for `UpdateJobManager<CountJob>.Instance.Unregister(this)`
+    }
+
+    // fetch current data using `this.GetJobData`
+    public int CurrentCount => this.GetJobData().Count;
+}
+```
 
 
 ## Benchmarks
