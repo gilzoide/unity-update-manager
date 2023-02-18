@@ -83,5 +83,11 @@ namespace Gilzoide.UpdateManager
                 _updatableIndexMap[swappedBack] = indexToRemove;
             }
         }
+
+        public void Clear()
+        {
+            _updatableObjects.Clear();
+            _updatableIndexMap.Clear();
+        }
     }
 }
