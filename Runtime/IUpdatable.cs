@@ -17,7 +17,7 @@ namespace Gilzoide.UpdateManager
         /// <summary>
         /// Shortcut for <c>UpdateManager.Instance.Register(<paramref name="updatable"/>)</c>.
         /// </summary>
-        /// <seealso cref="UpdateManager.Instance.Register"/>
+        /// <seealso cref="UpdateManager.Register"/>
         public static void RegisterInManager(this IUpdatable updatable)
         {
             UpdateManager.Instance.Register(updatable);
@@ -26,7 +26,7 @@ namespace Gilzoide.UpdateManager
         /// <summary>
         /// Shortcut for <c>UpdateManager.Instance.Unregister(<paramref name="updatable"/>)</c>.
         /// </summary>
-        /// <seealso cref="UpdateManager.Instance.Unregister"/>
+        /// <seealso cref="UpdateManager.Unregister"/>
         public static void UnregisterInManager(this IUpdatable updatable)
         {
             UpdateManager.Instance.Unregister(updatable);
