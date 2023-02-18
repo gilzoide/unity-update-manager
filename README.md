@@ -1,4 +1,6 @@
 # Update Manager
+[![openupm](https://img.shields.io/npm/v/com.gilzoide.update-manager?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.gilzoide.update-manager/)
+
 Simple to use Update Manager pattern for Unity + Jobified Update for `MonoBehaviour`s and pure C# classes alike.
 
 Using these may improve your game's CPU usage if there are thousands of objects updating every frame.
@@ -40,7 +42,14 @@ Job System:
 
 
 ## How to install
-Install using the [Unity Package Manager](https://docs.unity3d.com/Manual/upm-ui-giturl.html)
+This package is available on the [openupm registry](https://openupm.com/)
+and can be installed using the [openupm-cli](https://github.com/openupm/openupm-cli):
+
+```
+openupm add com.gilzoide.update-manager
+```
+
+Otherwise, you can install directly using the [Unity Package Manager](https://docs.unity3d.com/Manual/upm-ui-giturl.html)
 with the following URL:
 
 ```
