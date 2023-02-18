@@ -5,8 +5,18 @@ using UnityEngine;
 
 namespace Gilzoide.UpdateManager
 {
+    /// <summary>
+    /// Singleton MonoBehaviour that calls <see cref="IUpdatable.ManagedUpdate"/> to registered <see cref="IUpdatable"/> objects every frame.
+    /// </summary>
+    /// <remarks>
+    /// Any C# object can be registered for updates, including MonoBehaviours, pure C# classes and structs, as long as they implement <see cref="IUpdatable"/>.
+    /// <br/>
+    /// This class doesn't implement any execution order mechanism, so don't rely on <see cref="IUpdatable.ManagedUpdate"/> methods being executed in any order.
+    /// In fact, the order of executed methods might change during the lifetime of the UpdateManager.
+    /// </remarks>
     public class UpdateManager : MonoBehaviour
     {
+        /// <summary>Get or create the singleton instance</summary>
         public static UpdateManager Instance => (ApplicationUtils.IsQuitting || _instance != null) ? _instance : (_instance = CreateInstance());
         protected static UpdateManager _instance;
 
@@ -40,6 +50,13 @@ namespace Gilzoide.UpdateManager
             }
         }
 
+        /// <summary>
+        /// Register <paramref name="updatable"/> to be updated every frame.
+        /// </summary>
+        /// <remarks>
+        /// Registering updatable objects is O(1).
+        /// Registering an object more than once is a no-op.
+        /// </remarks>
         public void Register(IUpdatable updatable)
         {
             if (_updatableIndexMap.ContainsKey(updatable))
@@ -51,6 +68,13 @@ namespace Gilzoide.UpdateManager
             _updatableIndexMap.Add(updatable, _updatableObjects.Count - 1);
         }
 
+        /// <summary>
+        /// Unregister <paramref name="updatable"/>, so it is not updated every frame anymore.
+        /// </summary>
+        /// <remarks>
+        /// Unregistering updatable objects is O(1).
+        /// Unregistering an object that wasn't registered is a no-op.
+        /// </remarks>
         public void Unregister(IUpdatable updatable)
         {
             if (!_updatableIndexMap.TryGetValue(updatable, out int indexToRemove))
@@ -84,6 +108,9 @@ namespace Gilzoide.UpdateManager
             }
         }
 
+        /// <summary>
+        /// Unregisters all updatable objects at once.
+        /// </summary>
         public void Clear()
         {
             _updatableObjects.Clear();
