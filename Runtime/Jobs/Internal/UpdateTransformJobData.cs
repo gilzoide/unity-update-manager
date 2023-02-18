@@ -1,3 +1,4 @@
+using Gilzoide.UpdateManager.Extensions;
 using UnityEngine.Jobs;
 
 namespace Gilzoide.UpdateManager.Jobs.Internal
@@ -34,7 +35,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         public override void Dispose()
         {
             base.Dispose();
-            TransformAccessArrayExtensions.DisposeIfCreated(ref _transforms);
+            _transforms.DisposeIfCreated();
         }
     }
 }

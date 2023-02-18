@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Gilzoide.UpdateManager.Extensions;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;

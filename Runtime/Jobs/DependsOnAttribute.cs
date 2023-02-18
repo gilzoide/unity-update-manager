@@ -1,5 +1,5 @@
 using System;
-using Gilzoide.UpdateManager.Jobs.Internal;
+using Gilzoide.UpdateManager.Extensions;
 
 namespace Gilzoide.UpdateManager.Jobs
 {

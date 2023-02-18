@@ -1,10 +1,10 @@
 using UnityEngine.Jobs;
 
-namespace Gilzoide.UpdateManager.Jobs.Internal
+namespace Gilzoide.UpdateManager.Extensions
 {
     public static class TransformAccessArrayExtensions
     {
-        public static void DisposeIfCreated(ref TransformAccessArray transformArray)
+        public static void DisposeIfCreated(this ref TransformAccessArray transformArray)
         {
             if (transformArray.isCreated)
             {
