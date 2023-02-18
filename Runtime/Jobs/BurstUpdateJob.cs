@@ -3,7 +3,7 @@ using Gilzoide.UpdateManager.Jobs.Internal;
 using Unity.Burst;
 using Unity.Jobs;
 
-namespace Gilzoide.UpdateManager.Jobs.Burst
+namespace Gilzoide.UpdateManager.Jobs
 {
     [BurstCompile]
     public struct BurstUpdateJob<TData> : IInternalUpdateJob<TData>
