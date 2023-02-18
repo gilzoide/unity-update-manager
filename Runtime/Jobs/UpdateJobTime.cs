@@ -1,47 +1,42 @@
-using UnityEngine;
+using UnityTime = UnityEngine.Time;
 
 namespace Gilzoide.UpdateManager.Jobs
 {
-    public class UpdateJobTime : IUpdatable
+    public struct UpdateJobTime
     {
-        public float time { get; internal set; }
-        public float deltaTime { get; internal set; }
-        public float smoothDeltaTime { get; internal set; }
-        public float unscaledDeltaTime { get; internal set; }
-        public float realtimeSinceStartup { get; internal set; }
-        public float timeSinceLevelLoad { get; internal set; }
+        public static float time => InstanceRef.Time;
+        public static float deltaTime => InstanceRef.DeltaTime;
+        public static float smoothDeltaTime => InstanceRef.SmoothDeltaTime;
+        public static float unscaledDeltaTime => InstanceRef.UnscaledDeltaTime;
+        public static float realtimeSinceStartup => InstanceRef.RealtimeSinceStartup;
+        public static float timeSinceLevelLoad => InstanceRef.TimeSinceLevelLoad;
+        public static float frameCount => InstanceRef.FrameCount;
 
-        private int registerCount = 0;
+        public float Time { get; private set; }
+        public float DeltaTime { get; private set; }
+        public float SmoothDeltaTime { get; private set; }
+        public float UnscaledDeltaTime { get; private set; }
+        public float RealtimeSinceStartup { get; private set; }
+        public float TimeSinceLevelLoad { get; private set; }
+        public float FrameCount { get; private set; }
 
-        public static UpdateJobTime Instance => _instance != null ? _instance : (_instance = new UpdateJobTime());
-        protected static UpdateJobTime _instance;
+        public static UpdateJobTime Instance => InstanceRef;
 
-        public void RegisterUpdate()
+#if HAVE_BURST
+        internal static ref UpdateJobTime InstanceRef => ref Unity.Burst.SharedStatic<UpdateJobTime>.GetOrCreate<UpdateJobTime>().Data;
+#else
+        internal static UpdateJobTime InstanceRef;
+#endif
+
+        internal void Refresh()
         {
-            if (registerCount == 0)
-            {
-                UpdateManager.Instance.Register(this);
-            }
-            registerCount++;
-        }
-
-        public void UnregisterUpdate()
-        {
-            registerCount--;
-            if (registerCount == 0)
-            {
-                UpdateManager.Instance.Unregister(this);
-            }
-        }
-
-        public void ManagedUpdate()
-        {
-            time = Time.time;
-            deltaTime = Time.deltaTime;
-            smoothDeltaTime = Time.smoothDeltaTime;
-            unscaledDeltaTime = Time.unscaledDeltaTime;
-            realtimeSinceStartup = Time.realtimeSinceStartup;
-            timeSinceLevelLoad = Time.timeSinceLevelLoad;
+            Time = UnityTime.time;
+            DeltaTime = UnityTime.deltaTime;
+            SmoothDeltaTime = UnityTime.smoothDeltaTime;
+            UnscaledDeltaTime = UnityTime.unscaledDeltaTime;
+            RealtimeSinceStartup = UnityTime.realtimeSinceStartup;
+            TimeSinceLevelLoad = UnityTime.timeSinceLevelLoad;
+            FrameCount = UnityTime.frameCount;
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Gilzoide.UpdateManager.Jobs;
 using UnityEngine;
 
 namespace Gilzoide.UpdateManager
@@ -24,6 +25,7 @@ namespace Gilzoide.UpdateManager
 
         private void Update()
         {
+            UpdateJobTime.InstanceRef.Refresh();
             for (_loopCounter = 0; _loopCounter < _updatableObjects.Count; _loopCounter++)
             {
                 _updatableObjects[_loopCounter].ManagedUpdate();

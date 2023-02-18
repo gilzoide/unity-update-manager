@@ -161,19 +161,17 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         {
             _isPendingUpdate = true;
 
-            UpdateJobTime.Instance.RegisterUpdate();
-            UpdateManager.Instance.Register(this);
-
+            _dependencyJobHandles = new NativeArray<JobHandle>(_dependencyManagers.Length, Allocator.Persistent);
             for (int i = 0; i < _dependencyManagers.Length; i++)
             {
                 _dependencyManagers[i].OnJobScheduled += ScheduleJobIfDependenciesMet;
             }
-            _dependencyJobHandles = new NativeArray<JobHandle>(_dependencyManagers.Length, Allocator.Persistent);
+
+            UpdateManager.Instance.Register(this);
         }
 
         private void StopUpdating()
         {
-            UpdateJobTime.Instance.UnregisterUpdate();
             UpdateManager.Instance.Unregister(this);
 
             for (int i = 0; i < _dependencyManagers.Length; i++)
