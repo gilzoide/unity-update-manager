@@ -1,19 +1,17 @@
-using System;
 using Gilzoide.UpdateManager.Jobs.Internal;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
-using Unity.Jobs.LowLevel.Unsafe;
 using UnityEngine;
 
 namespace Gilzoide.UpdateManager.Jobs
 {
-    public class UpdateJobManager<TData> : AUpdateJobManager<TData, IJobUpdatable<TData>, UpdateJobData<TData, IJobUpdatable<TData>>>
+    public class UpdateJobManager<TData, TJob> : AUpdateJobManager<TData, IJobUpdatable<TData, TJob>, UpdateJobData<TData, IJobUpdatable<TData, TJob>>>
         where TData : struct, IUpdateJob
+        where TJob : struct, IInternalUpdateJob<TData>
     {
         public static int JobBatchSize = UpdateJobOptions.GetBatchSize<TData>();
 
-        public static UpdateJobManager<TData> Instance => _instance != null ? _instance : (_instance = new UpdateJobManager<TData>());
-        private static UpdateJobManager<TData> _instance;
+        public static UpdateJobManager<TData, TJob> Instance => _instance != null ? _instance : (_instance = new UpdateJobManager<TData, TJob>());
+        private static UpdateJobManager<TData, TJob> _instance;
 
         static UpdateJobManager()
         {
@@ -22,37 +20,15 @@ namespace Gilzoide.UpdateManager.Jobs
 
         protected unsafe override JobHandle ScheduleJob(JobHandle dependsOn)
         {
-            var scheduleParams = new JobsUtility.JobScheduleParameters(UnsafeUtility.AddressOf(ref _jobData.DataRef), GetReflectionData(), dependsOn, ScheduleMode.Parallel);
-            return JobsUtility.ScheduleParallelFor(ref scheduleParams, _jobData.Length, JobBatchSize);
-        }
-
-        #region Job Producer
-
-        public delegate void ExecuteJobFunction(ref UnsafeNativeList<TData> jobData, IntPtr jobData2, IntPtr bufferRangePatchData, ref JobRanges ranges, int jobIndex);
-        public static unsafe void Execute(ref UnsafeNativeList<TData> jobData, IntPtr jobData2, IntPtr bufferRangePatchData, ref JobRanges ranges, int jobIndex)
-        {
-            while (JobsUtility.GetWorkStealingRange(ref ranges, jobIndex, out int begin, out int end))
+            return new TJob
             {
-                JobsUtility.PatchBufferMinMaxRanges(bufferRangePatchData, UnsafeUtility.AddressOf(ref jobData), begin, end - begin);
-
-                int endThatCompilerCanSeeWillNeverChange = end;
-                for (int i = begin; i < endThatCompilerCanSeeWillNeverChange; ++i)
-                {
-                    jobData.ItemRefAt(i).Execute();
-                }
-            }
+                Data = _jobData.Data,
+            }.Schedule(_jobData.Length, JobBatchSize, dependsOn);
         }
+    }
 
-        private static IntPtr _reflectionData;
-        private static IntPtr GetReflectionData()
-        {
-            if (_reflectionData == IntPtr.Zero)
-            {
-                _reflectionData = JobsUtility.CreateJobReflectionData(typeof(UnsafeNativeList<TData>), (ExecuteJobFunction) Execute);
-            }
-            return _reflectionData;
-        }
-
-        #endregion
+    public class UpdateJobManager<TData> : UpdateJobManager<TData, UpdateJob<TData>>
+        where TData : struct, IUpdateJob
+    {
     }
 }

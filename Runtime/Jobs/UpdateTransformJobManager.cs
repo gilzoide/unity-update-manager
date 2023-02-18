@@ -5,14 +5,15 @@ using UnityEngine.Jobs;
 
 namespace Gilzoide.UpdateManager.Jobs
 {
-    public class UpdateTransformJobManager<TData> : AUpdateJobManager<TData, ITransformJobUpdatable<TData>, UpdateTransformJobData<TData, ITransformJobUpdatable<TData>>>
+    public class UpdateTransformJobManager<TData, TJob> : AUpdateJobManager<TData, ITransformJobUpdatable<TData, TJob>, UpdateTransformJobData<TData, ITransformJobUpdatable<TData, TJob>>>
         where TData : struct, IUpdateTransformJob
+        where TJob : struct, IInternalUpdateTransformJob<TData>
     {
         public static int JobBatchSize = UpdateJobOptions.GetBatchSize<TData>();
         public static bool ReadOnlyTransforms = UpdateJobOptions.GetReadOnlyTransforms<TData>();
 
-        public static UpdateTransformJobManager<TData> Instance => _instance != null ? _instance : (_instance = new UpdateTransformJobManager<TData>());
-        private static UpdateTransformJobManager<TData> _instance;
+        public static UpdateTransformJobManager<TData, TJob> Instance => _instance != null ? _instance : (_instance = new UpdateTransformJobManager<TData, TJob>());
+        private static UpdateTransformJobManager<TData, TJob> _instance;
 
         static UpdateTransformJobManager()
         {
@@ -21,7 +22,7 @@ namespace Gilzoide.UpdateManager.Jobs
 
         protected override JobHandle ScheduleJob(JobHandle dependsOn)
         {
-            var job = new UpdateTransformJob
+            var job = new TJob
             {
                 Data = _jobData.Data,
             };
@@ -29,15 +30,10 @@ namespace Gilzoide.UpdateManager.Jobs
                 ? job.ScheduleReadOnly(_jobData.Transforms, JobBatchSize, dependsOn)
                 : job.Schedule(_jobData.Transforms, dependsOn);
         }
+    }
 
-        protected struct UpdateTransformJob : IJobParallelForTransform
-        {
-            public UnsafeNativeList<TData> Data;
-
-            public unsafe void Execute(int index, TransformAccess transform)
-            {
-                Data.ItemRefAt(index).Execute(transform);
-            }
-        }
+    public class UpdateTransformJobManager<TData> : UpdateTransformJobManager<TData, UpdateTransformJob<TData>>
+        where TData : struct, IUpdateTransformJob
+    {
     }
 }
