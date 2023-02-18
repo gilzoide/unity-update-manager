@@ -27,7 +27,7 @@ Job System:
 - Inherit `AJobBehaviour<MyIUpdateTransformJobStruct>` to automatically register/unregister MonoBehaviours in `UpdateTransformJobManager<MyIUpdateTransformJobStruct>` in their `OnEnable`/`OnDisable` messages
 - Burst compilation is supported by implementing `IJobUpdatable<MyIUpdateJobStruct, BurstUpdateJob<MyIUpdateJobStruct>>` or `ITransformJobUpdatable<MyIUpdateTransformJobStruct, BurstUpdateTransformJob<MyIUpdateTransformJobStruct>>`.
   This also applies for `AJobBehaviour<MyIUpdateTransformJobStruct, BurstUpdateJob<MyIUpdateTransformJobStruct>>`
-- `UpdateJobTime` singleton class with information from Unity's `Time` class that you can access from within jobs (`deltaTime`, `time`, etc...)
+- `UpdateJobTime` class with information from Unity's `Time` class that you can access from within jobs (`deltaTime`, `time`, etc...)
 - Configurable job batch size using `[JobBatchSize(...)]` attribute in job structs.
   This is ignored in read-write transform jobs.
 - Add dependencies between managed jobs using `[DependsOn(typeof(MyJobDependency1), ...)]`
@@ -57,7 +57,7 @@ https://github.com/gilzoide/unity-update-manager.git#1.0.0
 
 
 ## How to use
-### `UpdateManager` + `MonoBehaviour`:
+### `UpdateManager` + `MonoBehaviour`
 ```cs
 using Gilzoide.UpdateManager;
 using UnityEngine;
@@ -71,7 +71,7 @@ public class MyManagedUpdatableBehaviour : AUpdateManagerBehaviour
 }
 ```
 
-### `UpdateManager` with pure C# class:
+### `UpdateManager` with pure C# class
 ```cs
 using Gilzoide.UpdateManager;
 using UnityEngine;
@@ -118,7 +118,7 @@ public struct MoveJob : IUpdateTransformJob
         Debug.Log("This will be called every frame using Unity's Job system");
         // This runs outside of the Main Thread, so
         // we need to use `UpdateJobTime` instead of `Time`
-        float deltaTime = UpdateJobTime.Instance.deltaTime;
+        float deltaTime = UpdateJobTime.deltaTime;
         // You can modify the Transform in jobs!
         transform.localPosition += Direction * Speed * deltaTime;
         // You can modify the struct's value and fetch them later!

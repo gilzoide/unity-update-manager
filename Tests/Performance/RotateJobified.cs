@@ -12,7 +12,7 @@ namespace Gilzoide.UpdateManager.Tests.Performance
 
         public void Execute(TransformAccess transform)
         {
-            var rotation = Vector3.one * (Speed * UpdateJobTime.Instance.deltaTime);
+            var rotation = Vector3.one * (Speed * UpdateJobTime.deltaTime);
             transform.localRotation *= Quaternion.Euler(rotation.x, rotation.y, rotation.z);
             Speed = Mathf.Clamp(Speed + Delta, 0, Max);
         }
