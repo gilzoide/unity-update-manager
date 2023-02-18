@@ -1,7 +1,6 @@
 #if HAVE_BURST
 using Gilzoide.UpdateManager.Jobs.Internal;
 using Unity.Burst;
-using Unity.Jobs;
 
 namespace Gilzoide.UpdateManager.Jobs
 {

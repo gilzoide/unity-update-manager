@@ -9,11 +9,17 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
 
         public static int GetBatchSize<TData>()
         {
-            if (typeof(TData).GetCustomAttribute<UpdateJobOptionsAttribute>() is UpdateJobOptionsAttribute options
+            if (typeof(TData).GetCustomAttribute<JobBatchSizeAttribute>() is JobBatchSizeAttribute batchSizeAttribute)
+            {
+                return batchSizeAttribute.BatchSize;
+            }
+#pragma warning disable CS0618
+            else if (typeof(TData).GetCustomAttribute<UpdateJobOptionsAttribute>() is UpdateJobOptionsAttribute options
                 && options.BatchSize > 0)
             {
                 return options.BatchSize;
             }
+#pragma warning restore CS0618
             else
             {
                 return DefaultBatchSize;
@@ -23,8 +29,10 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         public static bool GetReadOnlyTransforms<TData>()
         {
             return typeof(TData).GetCustomAttribute<ReadOnlyTransformsAttribute>() != null
+#pragma warning disable CS0618
                 || (typeof(TData).GetCustomAttribute<UpdateJobOptionsAttribute>() is UpdateJobOptionsAttribute options
                     && options.ReadOnlyTransforms);
+#pragma warning restore CS0618
         }
 
         public static Type[] GetDependsOn<TData>()
