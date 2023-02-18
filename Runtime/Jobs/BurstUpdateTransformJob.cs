@@ -5,6 +5,9 @@ using UnityEngine.Jobs;
 
 namespace Gilzoide.UpdateManager.Jobs
 {
+    /// <summary>
+    /// Burst-enabled and <see cref="TransformAccess"/>-enabled update job struct. 
+    /// </summary>
     [BurstCompile]
     public struct BurstUpdateTransformJob<TData> : IInternalUpdateTransformJob<TData>
         where TData : struct, IUpdateTransformJob

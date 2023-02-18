@@ -12,6 +12,12 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         where TDataProvider : IInitialJobDataProvider<TData>
         where TJobData : UpdateJobData<TData, TDataProvider>, new()
     {
+        /// <summary>
+        /// Event invoked when the update job is scheduled.
+        /// </summary>
+        /// <remarks>
+        /// This is used internally for implementing dependencies between managed jobs.
+        /// </remarks>
         public event Action<JobHandle> OnJobScheduled;
 
         protected readonly Dictionary<TDataProvider, int> _providerIndexMap = new Dictionary<TDataProvider, int>();
@@ -62,6 +68,13 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             ScheduleJobIfDependenciesMet();
         }
 
+        /// <summary>
+        /// Register <paramref name="provider"/> to have its update job scheduled every frame.
+        /// </summary>
+        /// <remarks>
+        /// Registering job provider objects is O(1).
+        /// Registering an object more than once is a no-op.
+        /// </remarks>
         public void Register(TDataProvider provider)
         {
             if (_providerIndexMap.ContainsKey(provider))
@@ -78,6 +91,13 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             _isDirty = true;
         }
 
+        /// <summary>
+        /// Unregister <paramref name="provider"/>, so its update job is not scheduled anymore.
+        /// </summary>
+        /// <remarks>
+        /// Unregistering job provider objects is O(1).
+        /// Unregistering an object that wasn't registered is a no-op.
+        /// </remarks>
         public void Unregister(TDataProvider provider)
         {
             if (_providerIndexMap.TryGetValue(provider, out int index))
@@ -87,6 +107,14 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             }
         }
 
+        /// <summary>
+        /// Get a copy of the job data from the last processed frame for <paramref name="provider"/>.
+        /// </summary>
+        /// <remarks>
+        /// Since update job managers use double buffering for the data, you can access a copy of the last processed data at any time, even while jobs are scheduled and/or processing.
+        /// <br/>
+        /// Calling this with an unregistered provider returns <see langword="default"/>.
+        /// </remarks>
         public TData GetData(TDataProvider provider)
         {
             return _providerIndexMap.TryGetValue(provider, out int index)
@@ -94,6 +122,13 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
                 : default;
         }
 
+        /// <summary>
+        /// Completes current running job, if there is any, remove all job providers and clears up used memory.
+        /// </summary>
+        /// <remarks>
+        /// This is called automatically when all job providers are unregistered or when the manager is finalized.
+        /// You shouldn't need to call this manually at any point.
+        /// </remarks>
         public void Dispose()
         {
             _jobHandle.Complete();
@@ -109,7 +144,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             StopUpdating();
         }
 
-        protected void RefreshProviders()
+        private void RefreshProviders()
         {
             RemovePendingProviders();
 
@@ -119,7 +154,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             AddPendingProviders();
         }
 
-        protected void RemovePendingProviders()
+        private void RemovePendingProviders()
         {
             if (_dataProvidersToRemove.Count == 0)
             {
@@ -141,7 +176,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             _dataProvidersToRemove.Clear();
         }
 
-        protected void AddPendingProviders()
+        private void AddPendingProviders()
         {
             if (_dataProvidersToAdd.Count == 0)
             {

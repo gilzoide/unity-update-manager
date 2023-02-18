@@ -1,23 +1,41 @@
-using UnityTime = UnityEngine.Time;
-
 namespace Gilzoide.UpdateManager.Jobs
 {
+    /// <summary>
+    /// Struct for accessing <see cref="UnityEngine.Time"/> properties from within jobs or other multithreaded code.
+    /// </summary>
+    /// <remarks>
+    /// All properties are available from Burst-compilable jobs.
+    /// </remarks>
     public struct UpdateJobTime
     {
+        /// <summary>Cached value for <see cref="UnityEngine.Time.time"/> from current running frame</summary>
         public static float time => InstanceRef.Time;
+        /// <summary>Cached value for <see cref="UnityEngine.Time.deltaTime"/> from current running frame</summary>
         public static float deltaTime => InstanceRef.DeltaTime;
+        /// <summary>Cached value for <see cref="UnityEngine.Time.smoothDeltaTime"/> from current running frame</summary>
         public static float smoothDeltaTime => InstanceRef.SmoothDeltaTime;
+        /// <summary>Cached value for <see cref="UnityEngine.Time.unscaledDeltaTime"/> from current running frame</summary>
         public static float unscaledDeltaTime => InstanceRef.UnscaledDeltaTime;
+        /// <summary>Cached value for <see cref="UnityEngine.Time.realtimeSinceStartup"/> from current running frame</summary>
         public static float realtimeSinceStartup => InstanceRef.RealtimeSinceStartup;
+        /// <summary>Cached value for <see cref="UnityEngine.Time.timeSinceLevelLoad"/> from current running frame</summary>
         public static float timeSinceLevelLoad => InstanceRef.TimeSinceLevelLoad;
+        /// <summary>Cached value for <see cref="UnityEngine.Time.frameCount"/> from current running frame</summary>
         public static float frameCount => InstanceRef.FrameCount;
 
+        /// <summary>Cached value for <see cref="UnityEngine.Time.time"/> from current running frame</summary>
         public float Time { get; private set; }
+        /// <summary>Cached value for <see cref="UnityEngine.Time.deltaTime"/> from current running frame</summary>
         public float DeltaTime { get; private set; }
+        /// <summary>Cached value for <see cref="UnityEngine.Time.smoothDeltaTime"/> from current running frame</summary>
         public float SmoothDeltaTime { get; private set; }
+        /// <summary>Cached value for <see cref="UnityEngine.Time.unscaledDeltaTime"/> from current running frame</summary>
         public float UnscaledDeltaTime { get; private set; }
+        /// <summary>Cached value for <see cref="UnityEngine.Time.realtimeSinceStartup"/> from current running frame</summary>
         public float RealtimeSinceStartup { get; private set; }
+        /// <summary>Cached value for <see cref="UnityEngine.Time.timeSinceLevelLoad"/> from current running frame</summary>
         public float TimeSinceLevelLoad { get; private set; }
+        /// <summary>Cached value for <see cref="UnityEngine.Time.frameCount"/> from current running frame</summary>
         public float FrameCount { get; private set; }
 
         public static UpdateJobTime Instance => InstanceRef;
@@ -30,13 +48,13 @@ namespace Gilzoide.UpdateManager.Jobs
 
         internal void Refresh()
         {
-            Time = UnityTime.time;
-            DeltaTime = UnityTime.deltaTime;
-            SmoothDeltaTime = UnityTime.smoothDeltaTime;
-            UnscaledDeltaTime = UnityTime.unscaledDeltaTime;
-            RealtimeSinceStartup = UnityTime.realtimeSinceStartup;
-            TimeSinceLevelLoad = UnityTime.timeSinceLevelLoad;
-            FrameCount = UnityTime.frameCount;
+            Time = UnityEngine.Time.time;
+            DeltaTime = UnityEngine.Time.deltaTime;
+            SmoothDeltaTime = UnityEngine.Time.smoothDeltaTime;
+            UnscaledDeltaTime = UnityEngine.Time.unscaledDeltaTime;
+            RealtimeSinceStartup = UnityEngine.Time.realtimeSinceStartup;
+            TimeSinceLevelLoad = UnityEngine.Time.timeSinceLevelLoad;
+            FrameCount = UnityEngine.Time.frameCount;
         }
     }
 }
