@@ -31,15 +31,19 @@ Job System:
 - `UpdateJobTime` class with information from Unity's `Time` class that you can access from within jobs (`deltaTime`, `time`, etc...)
 - Configurable job batch size using `[JobBatchSize(...)]` attribute in job structs.
   This is ignored in read-write transform jobs.
-- Add dependencies between managed jobs using `[DependsOn(typeof(MyJobDependency1), ...)]`
+- Add dependencies between managed jobs using `[DependsOn(typeof(MyJobDependency1), ...)]`.
+  
+  For now, no dependency cycle detection is performed, so job runners may get deadlocked if you misuse it.
 
 
 ## Caveats
-- `UpdateManager` doesn't have the concept of script execution order like Unity MonoBehaviours, so don't rely on execution order
+- `UpdateManager` doesn't have the concept of script execution order like Unity MonoBehaviours, so don't rely on execution order.
 - Read-write transform jobs are only parallelized if the objects live in hierarchies with different root objects.
   This is a limitation of Unity's job system.
 
   Read-only transform jobs, marked by the `[ReadOnlyTransforms]` attribute, don't have this restriction.
+- Although native container fields (`NativeArray`, `NativeList`...) are supported, the thread safety system provided by Unity is not applied to them.
+  Use them with care!
 
 
 ## How to install
