@@ -109,13 +109,13 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         /// <remarks>
         /// Since update job managers use double buffering for the data, you can access a copy of the last processed data at any time, even while jobs are scheduled and/or processing.
         /// <br/>
-        /// Calling this with an unregistered provider returns <see langword="default"/>.
+        /// Calling this with an unregistered provider returns <c>provider.InitialJobData</c>.
         /// </remarks>
         public TData GetData(TDataProvider provider)
         {
             return _providerIndexMap.TryGetValue(provider, out int index)
                 ? _jobData[index]
-                : default;
+                : provider.InitialJobData;
         }
 
         /// <summary>
