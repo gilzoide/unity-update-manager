@@ -1,6 +1,7 @@
 using System;
+using Gilzoide.UpdateManager.Jobs;
 
-namespace Gilzoide.UpdateManager.Jobs.Internal
+namespace Gilzoide.UpdateManager.Extensions
 {
     public static class TypeExtensions
     {

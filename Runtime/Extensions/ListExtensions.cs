@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 
-namespace Gilzoide.UpdateManager.Jobs.Internal
+namespace Gilzoide.UpdateManager.Extensions
 {
     public static class ListExtensions
     {
-        public static void RemoveAtSwapBack<T>(this List<T> list, int index, out T swappedValue)
+        public static void RemoveAtSwapBack<T>(this IList<T> list, int index, out T swappedValue)
         {
             int lastIndex = list.Count - 1;
             if (lastIndex > 0 && lastIndex != index)
