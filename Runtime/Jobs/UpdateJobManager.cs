@@ -14,6 +14,7 @@ namespace Gilzoide.UpdateManager.Jobs
     /// <br/>
     /// To use Burst-compiled jobs, pass <see cref="BurstUpdateJob{}"/> as <typeparamref name="TJob"/>.
     /// </remarks>
+    /// <seealso cref="Unity.Jobs.IJobParallelForExtensions.Schedule"/>
     public class UpdateJobManager<TData, TJob> : AUpdateJobManager<TData, IJobUpdatable<TData, TJob>, UpdateJobData<TData, IJobUpdatable<TData, TJob>>>
         where TData : struct, IUpdateJob
         where TJob : struct, IInternalUpdateJob<TData>
