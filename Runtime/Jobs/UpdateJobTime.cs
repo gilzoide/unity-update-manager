@@ -10,6 +10,7 @@ namespace Gilzoide.UpdateManager.Jobs
         public static float unscaledDeltaTime => InstanceRef.UnscaledDeltaTime;
         public static float realtimeSinceStartup => InstanceRef.RealtimeSinceStartup;
         public static float timeSinceLevelLoad => InstanceRef.TimeSinceLevelLoad;
+        public static float frameCount => InstanceRef.FrameCount;
 
         public float Time { get; private set; }
         public float DeltaTime { get; private set; }
@@ -17,6 +18,7 @@ namespace Gilzoide.UpdateManager.Jobs
         public float UnscaledDeltaTime { get; private set; }
         public float RealtimeSinceStartup { get; private set; }
         public float TimeSinceLevelLoad { get; private set; }
+        public float FrameCount { get; private set; }
 
         public static UpdateJobTime Instance => InstanceRef;
 
@@ -34,6 +36,7 @@ namespace Gilzoide.UpdateManager.Jobs
             UnscaledDeltaTime = UnityTime.unscaledDeltaTime;
             RealtimeSinceStartup = UnityTime.realtimeSinceStartup;
             TimeSinceLevelLoad = UnityTime.timeSinceLevelLoad;
+            FrameCount = UnityTime.frameCount;
         }
     }
 }
