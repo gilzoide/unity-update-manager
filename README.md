@@ -26,7 +26,8 @@ Job System:
   Remember to unregister the objects with `IJobUpdatable.UnregisterInManager` or `ITransformJobUpdatable.UnregisterInManager` when necessary.
 - Inherit `AJobBehaviour<MyIUpdateTransformJobStruct>` to automatically register/unregister MonoBehaviours in `UpdateTransformJobManager<MyIUpdateTransformJobStruct>` in their `OnEnable`/`OnDisable` messages
 - Burst compilation is supported by implementing `IJobUpdatable<MyIUpdateJobStruct, BurstUpdateJob<MyIUpdateJobStruct>>` or `ITransformJobUpdatable<MyIUpdateTransformJobStruct, BurstUpdateTransformJob<MyIUpdateTransformJobStruct>>`.
-  This also applies for `AJobBehaviour<MyIUpdateTransformJobStruct, BurstUpdateJob<MyIUpdateTransformJobStruct>>`
+  
+  MonoBehaviours inheriting `AJobBehaviour<MyIUpdateTransformJobStruct, BurstUpdateTransformJob<MyIUpdateTransformJobStruct>>` are also Burst compiled.
 - `UpdateJobTime` class with information from Unity's `Time` class that you can access from within jobs (`deltaTime`, `time`, etc...)
 - Configurable job batch size using `[JobBatchSize(...)]` attribute in job structs.
   This is ignored in read-write transform jobs.
