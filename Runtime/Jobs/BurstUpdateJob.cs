@@ -4,6 +4,9 @@ using Unity.Burst;
 
 namespace Gilzoide.UpdateManager.Jobs
 {
+    /// <summary>
+    /// Burst-enabled update job struct. 
+    /// </summary>
     [BurstCompile]
     public struct BurstUpdateJob<TData> : IInternalUpdateJob<TData>
         where TData : struct, IUpdateJob
