@@ -1,8 +1,7 @@
 using System;
 using System.Reflection;
-using Gilzoide.UpdateManager.Jobs.Internal;
 
-namespace Gilzoide.UpdateManager.Jobs
+namespace Gilzoide.UpdateManager.Jobs.Internal
 {
     public static class UpdateJobOptions
     {
