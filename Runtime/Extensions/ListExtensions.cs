@@ -17,5 +17,12 @@ namespace Gilzoide.UpdateManager.Extensions
             }
             list.RemoveAt(lastIndex);
         }
+
+        public static void Swap<T>(this IList<T> list, int sourceIndex, int destinationIndex, out T newDestinationValue)
+        {
+            newDestinationValue = list[sourceIndex];
+            list[sourceIndex] = list[destinationIndex];
+            list[destinationIndex] = newDestinationValue;
+        }
     }
 }
