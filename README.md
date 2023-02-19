@@ -42,7 +42,7 @@ Job System:
   This is a limitation of Unity's job system.
 
   Read-only transform jobs, marked by the `[ReadOnlyTransformAccess]` attribute, don't have this restriction.
-- Although native container fields (`NativeArray`, `NativeList`...) are supported, the thread safety system provided by Unity is not applied to them.
+- Although native container fields (`NativeArray`, `NativeList`...) are supported in managed jobs, the thread safety system provided by Unity is not applied to them.
   Use them with care!
 
 
@@ -59,6 +59,8 @@ with the following URL:
 ```
 https://github.com/gilzoide/unity-update-manager.git#1.0.0
 ```
+
+Or you can clone this repository or download a snapshot of it directly inside your project's `Assets` or `Packages` folder.
 
 
 ## How to use
