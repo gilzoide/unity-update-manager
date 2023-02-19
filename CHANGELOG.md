@@ -1,5 +1,7 @@
 # Changelog
-## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.0.0...HEAD)
+## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.1.0...HEAD)
+
+## [1.1.0](https://github.com/gilzoide/unity-update-manager/releases/tag/1.1.0)
 ### Added
 - `AJobBehaviour` custom editor that shows current job data in a JSON format while inspecting the object.
 - Added support for Burst-compiled jobs by specifying `BurstUpdateJob<>` or `BurstUpdateTransformJob<>` as the second type parameter to the generic interfaces `IJobUpdatable<,>` and `ITransformJobUpdatable<,>` as well as `AJobBehaviour<,>`.
