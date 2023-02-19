@@ -41,7 +41,7 @@ Job System:
 - Read-write transform jobs are only parallelized if the objects live in hierarchies with different root objects.
   This is a limitation of Unity's job system.
 
-  Read-only transform jobs, marked by the `[ReadOnlyTransforms]` attribute, don't have this restriction.
+  Read-only transform jobs, marked by the `[ReadOnlyTransformAccess]` attribute, don't have this restriction.
 - Although native container fields (`NativeArray`, `NativeList`...) are supported, the thread safety system provided by Unity is not applied to them.
   Use them with care!
 

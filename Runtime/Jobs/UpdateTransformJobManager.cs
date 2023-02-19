@@ -22,7 +22,7 @@ namespace Gilzoide.UpdateManager.Jobs
         where TJob : struct, IInternalUpdateTransformJob<TData>
     {
         public static int JobBatchSize = UpdateJobOptions.GetBatchSize<TData>();
-        public static bool ReadOnlyTransforms = UpdateJobOptions.GetReadOnlyTransforms<TData>();
+        public static bool ReadOnlyTransformAccess = UpdateJobOptions.GetReadOnlyTransformAccess<TData>();
 
         /// <summary>Get or create the singleton instance</summary>
         public static UpdateTransformJobManager<TData, TJob> Instance => _instance != null ? _instance : (_instance = new UpdateTransformJobManager<TData, TJob>());
@@ -39,7 +39,7 @@ namespace Gilzoide.UpdateManager.Jobs
             {
                 Data = _jobData.Data,
             };
-            return ReadOnlyTransforms
+            return ReadOnlyTransformAccess
                 ? job.ScheduleReadOnly(_jobData.Transforms, JobBatchSize, dependsOn)
                 : job.Schedule(_jobData.Transforms, dependsOn);
         }

@@ -11,7 +11,7 @@ namespace Gilzoide.UpdateManager.Jobs
     /// Read-write transform jobs, on the other hand, are only parallelized for objects in hierarchies with different root objects.
     /// </remarks>
     [AttributeUsage(AttributeTargets.Struct)]
-    public class ReadOnlyTransformsAttribute : Attribute
+    public class ReadOnlyTransformAccessAttribute : Attribute
     {
     }
 }

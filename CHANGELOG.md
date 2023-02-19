@@ -8,11 +8,11 @@
 - Added support for native collections as fields in managed jobs.
   For now, the thread safety system provided by Unity is not applied to managed jobs native containers, so use them with care!
 - `[JobBatchSize(...)]` attribute for specifying the parallel job batch sizes for each job type.
-- `[ReadOnlyTransforms]` attribute for marking `IUpdateTransformJob`s with read-only transform access.
+- `[ReadOnlyTransformAccess]` attribute for marking `IUpdateTransformJob`s with read-only transform access.
 - `UpdateJobTime` now has static properties with names equal to the ones in `UnityEngine.Time`, no need to access using `UpdateJobTime.Instance` anymore.
 
 ### Deprecated
-- Deprecated the `[UpdateJobOptions(...)]` attribute, use `[JobBatchSize(...)]` and `[ReadOnlyTransforms]` instead.
+- Deprecated the `[UpdateJobOptions(...)]` attribute, use `[JobBatchSize(...)]` and `[ReadOnlyTransformAccess]` instead.
   They are clearer to read in code.
 
 ### Changed

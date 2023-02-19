@@ -27,9 +27,9 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             }
         }
 
-        public static bool GetReadOnlyTransforms<TData>()
+        public static bool GetReadOnlyTransformAccess<TData>()
         {
-            return typeof(TData).GetCustomAttribute<ReadOnlyTransformsAttribute>() != null
+            return typeof(TData).GetCustomAttribute<ReadOnlyTransformAccessAttribute>() != null
 #pragma warning disable CS0618
                 || (typeof(TData).GetCustomAttribute<UpdateJobOptionsAttribute>() is UpdateJobOptionsAttribute options
                     && options.ReadOnlyTransforms);
