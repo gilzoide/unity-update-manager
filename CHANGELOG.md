@@ -1,5 +1,19 @@
 # Changelog
 ## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.1.0...HEAD)
+### Changed
+- `UpdateJob<>` and `UpdateTransformJob<>` are now marked for Burst compilation.
+  Simply use concrete types and Burst will compile the jobs.
+- `AJobBehaviour<,>` now inherits `AJobBehaviour<>` and not the other way around.
+  The same is true for `IJobUpdatable<,>` and `ITransformJobUpdatable<,>`.
+
+### Removed
+- `BurstUpdateJob<>` and `BurstUpdateTransformJob<>` types.
+  `UpdateJob<>` and `UpdateTransformJob<>` are now marked for Burst compilation. 
+  It's enough to 
+- `UpdateJobManager<,>` and `UpdateTransformJobManager<,>`, which are not necessary anymore.
+
+### Fixed
+- Managed jobs with dependencies now work for Burst-compiled jobs.
 
 ## [1.1.0](https://github.com/gilzoide/unity-update-manager/releases/tag/1.1.0)
 ### Added

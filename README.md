@@ -25,9 +25,9 @@ Job System:
   
   Remember to unregister the objects with `IJobUpdatable.UnregisterInManager` or `ITransformJobUpdatable.UnregisterInManager` when necessary.
 - Inherit `AJobBehaviour<MyIUpdateTransformJobStruct>` to automatically register/unregister MonoBehaviours in `UpdateTransformJobManager<MyIUpdateTransformJobStruct>` in their `OnEnable`/`OnDisable` messages
-- Burst compilation is supported by implementing `IJobUpdatable<MyIUpdateJobStruct, BurstUpdateJob<MyIUpdateJobStruct>>` or `ITransformJobUpdatable<MyIUpdateTransformJobStruct, BurstUpdateTransformJob<MyIUpdateTransformJobStruct>>`.
-  
-  MonoBehaviours inheriting `AJobBehaviour<MyIUpdateTransformJobStruct, BurstUpdateTransformJob<MyIUpdateTransformJobStruct>>` are also Burst compiled.
+- Burst compilation is supported, but you have to explicitly use the concrete types `UpdateJob<MyIUpdateJobStruct>` or `UpdateTransformJob<MyIUpdateTransformJobStruct>` anywhere in compiled code.
+
+  An easy way for that is to implement `IJobUpdatable<MyIUpdateJobStruct, UpdateJob<MyIUpdateJobStruct>>`/`ITransformJobUpdatable<MyIUpdateTransformJobStruct, UpdateTransformJob<MyIUpdateTransformJobStruct>>` or inherit `AJobBehaviour<MyIUpdateTransformJobStruct, UpdateTransformJob<MyIUpdateTransformJobStruct>>`.
 - `UpdateJobTime` class with information from Unity's `Time` class that you can access from within jobs (`deltaTime`, `time`, etc...)
 - Configurable job batch size using `[JobBatchSize(...)]` attribute in job structs.
   This is ignored in read-write transform jobs.
@@ -134,7 +134,7 @@ public struct MoveJob : IUpdateTransformJob
 }
 
 // 2. Create the job-updated behaviour
-// Inherit `AJobBehaviour<MoveJob, BurstUpdateTransformJob<MoveJob>>`
+// Inherit `AJobBehaviour<MoveJob, UpdateTransformJob<MoveJob>>`
 // if you want to Burst compile the job
 public class MyJobifiedBehaviour : AJobBehaviour<MoveJob>
 {
@@ -179,7 +179,7 @@ public struct CountJob : IUpdateJob
 }
 
 // 2. Create the job-updated class
-// Implement `IJobUpdatable<CountJob, BurstUpdateTransformJob<CountJob>>`
+// Implement `IJobUpdatable<CountJob, UpdateJob<CountJob>>`
 // if you want to Burst compile the job
 public class MyJobifiedBehaviour : IJobUpdatable<CountJob>
 {
