@@ -12,21 +12,18 @@ namespace Gilzoide.UpdateManager.Jobs
     /// Any C# object can be registered for updates, including MonoBehaviours, pure C# classes and structs, as long as they implement <see cref="ITransformJobUpdatable{}"/>.
     /// <br/>
     /// This class runs jobs in parallel, so don't rely on jobs being executed in any order.
-    /// <br/>
-    /// To use Burst-compiled jobs, pass <see cref="BurstUpdateTransformJob{}"/> as <typeparamref name="TJob"/>.
     /// </remarks>
     /// <seealso cref="UnityEngine.Jobs.IJobParallelForTransformExtensions.Schedule"/>
     /// <seealso cref="UnityEngine.Jobs.IJobParallelForTransformExtensions.ScheduleReadOnly"/>
-    public class UpdateTransformJobManager<TData, TJob> : AUpdateJobManager<TData, ITransformJobUpdatable<TData, TJob>, UpdateTransformJobData<TData, ITransformJobUpdatable<TData, TJob>>>
+    public class UpdateTransformJobManager<TData> : AUpdateJobManager<TData, ITransformJobUpdatable<TData>, UpdateTransformJobData<TData, ITransformJobUpdatable<TData>>>
         where TData : struct, IUpdateTransformJob
-        where TJob : struct, IInternalUpdateTransformJob<TData>
     {
-        public static int JobBatchSize = UpdateJobOptions.GetBatchSize<TData>();
-        public static bool ReadOnlyTransformAccess = UpdateJobOptions.GetReadOnlyTransformAccess<TData>();
+        public static readonly int JobBatchSize = UpdateJobOptions.GetBatchSize<TData>();
+        public static readonly bool ReadOnlyTransformAccess = UpdateJobOptions.GetReadOnlyTransformAccess<TData>();
 
         /// <summary>Get or create the singleton instance</summary>
-        public static UpdateTransformJobManager<TData, TJob> Instance => _instance != null ? _instance : (_instance = new UpdateTransformJobManager<TData, TJob>());
-        private static UpdateTransformJobManager<TData, TJob> _instance;
+        public static UpdateTransformJobManager<TData> Instance => _instance != null ? _instance : (_instance = new UpdateTransformJobManager<TData>());
+        private static UpdateTransformJobManager<TData> _instance;
 
         static UpdateTransformJobManager()
         {
@@ -35,7 +32,7 @@ namespace Gilzoide.UpdateManager.Jobs
 
         protected override JobHandle ScheduleJob(JobHandle dependsOn)
         {
-            var job = new TJob
+            var job = new UpdateTransformJob<TData>
             {
                 Data = _jobData.Data,
             };
@@ -43,13 +40,5 @@ namespace Gilzoide.UpdateManager.Jobs
                 ? job.ScheduleReadOnly(_jobData.Transforms, JobBatchSize, dependsOn)
                 : job.Schedule(_jobData.Transforms, dependsOn);
         }
-    }
-
-    /// <summary>
-    /// Alias for <see cref="UpdateTransformJobManager{,}"/> that defaults to using jobs that are not Burst compilable.
-    /// </summary>
-    public class UpdateTransformJobManager<TData> : UpdateTransformJobManager<TData, UpdateTransformJob<TData>>
-        where TData : struct, IUpdateTransformJob
-    {
     }
 }

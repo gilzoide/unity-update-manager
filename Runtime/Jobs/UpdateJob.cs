@@ -1,14 +1,11 @@
-#if HAVE_BURST
 using Gilzoide.UpdateManager.Jobs.Internal;
-using Unity.Burst;
 
 namespace Gilzoide.UpdateManager.Jobs
 {
-    /// <summary>
-    /// Burst-enabled update job struct. 
-    /// </summary>
-    [BurstCompile]
-    public struct BurstUpdateJob<TData> : IInternalUpdateJob<TData>
+#if HAVE_BURST
+    [Unity.Burst.BurstCompile]
+#endif
+    public struct UpdateJob<TData> : IInternalUpdateJob<TData>
         where TData : struct, IUpdateJob
     {
         public UnsafeNativeList<TData> Data { get; set; }
@@ -19,4 +16,3 @@ namespace Gilzoide.UpdateManager.Jobs
         }
     }
 }
-#endif

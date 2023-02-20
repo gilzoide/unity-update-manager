@@ -3,58 +3,53 @@ using Gilzoide.UpdateManager.Jobs.Internal;
 namespace Gilzoide.UpdateManager.Jobs
 {
     /// <summary>
-    /// Implement this interface and register object with <see cref="UpdateTransformJobManager{,}.Register"/> to get job scheduled every frame.
+    /// Implement this interface and register object with <see cref="UpdateTransformJobManager{}.Register"/> to get job scheduled every frame.
     /// </summary>
-    /// <remarks>
-    /// To use Burst-compiled jobs, pass <see cref="BurstUpdateTransformJob{}"/> as <typeparamref name="TJob"/>.
-    /// </remarks>
-    public interface ITransformJobUpdatable<TData, TJob> : IInitialTransformJobDataProvider<TData>
+    public interface ITransformJobUpdatable<TData> : IInitialTransformJobDataProvider<TData>
         where TData : struct, IUpdateTransformJob
-        where TJob : struct, IInternalUpdateTransformJob<TData>
     {
     }
 
     /// <summary>
-    /// Alias for <see cref="IJobUpdatable{,}"/> that defaults to using jobs that are not Burst compilable.
+    /// Alias for <see cref="ITransformJobUpdatable{}"/>.
+    /// Pass <c>UpdateTransformJob&lt;<typeparamref name="TData"/>&gt;</c> as <typeparamref name="TJob"/> to Burst compile your job.
     /// </summary>
-    public interface ITransformJobUpdatable<TData> : ITransformJobUpdatable<TData, UpdateTransformJob<TData>>
+    public interface ITransformJobUpdatable<TData, TJob> : ITransformJobUpdatable<TData>
         where TData : struct, IUpdateTransformJob
+        where TJob : struct, IInternalUpdateTransformJob<TData>
     {
     }
 
     public static class ITransformJobUpdatableExtensions
     {
         /// <summary>
-        /// Shortcut for <c>UpdateTransformJobManager&lt;TData, TJob&gt;.Instance.Register(<paramref name="updatable"/>)</c>.
+        /// Shortcut for <c>UpdateTransformJobManager&lt;TData&gt;.Instance.Register(<paramref name="updatable"/>)</c>.
         /// </summary>
-        /// <seealso cref="UpdateTransformJobManager{,}.Register"/>
-        public static void RegisterInManager<TData, TJob>(this ITransformJobUpdatable<TData, TJob> updatable)
+        /// <seealso cref="UpdateTransformJobManager{}.Register"/>
+        public static void RegisterInManager<TData>(this ITransformJobUpdatable<TData> updatable)
             where TData : struct, IUpdateTransformJob
-            where TJob : struct, IInternalUpdateTransformJob<TData>
         {
-            UpdateTransformJobManager<TData, TJob>.Instance.Register(updatable);
+            UpdateTransformJobManager<TData>.Instance.Register(updatable);
         }
 
         /// <summary>
-        /// Shortcut for <c>UpdateTransformJobManager&lt;TData, TJob&gt;.Instance.Unregister(<paramref name="updatable"/>)</c>.
+        /// Shortcut for <c>UpdateTransformJobManager&lt;TData&gt;.Instance.Unregister(<paramref name="updatable"/>)</c>.
         /// </summary>
-        /// <seealso cref="UpdateTransformJobManager{,}.Unregister"/>
-        public static void UnregisterInManager<TData, TJob>(this ITransformJobUpdatable<TData, TJob> updatable)
+        /// <seealso cref="UpdateTransformJobManager{}.Unregister"/>
+        public static void UnregisterInManager<TData>(this ITransformJobUpdatable<TData> updatable)
             where TData : struct, IUpdateTransformJob
-            where TJob : struct, IInternalUpdateTransformJob<TData>
         {
-            UpdateTransformJobManager<TData, TJob>.Instance.Unregister(updatable);
+            UpdateTransformJobManager<TData>.Instance.Unregister(updatable);
         }
 
         /// <summary>
-        /// Shortcut for <c>UpdateTransformJobManager&lt;TData, TJob&gt;.Instance.GetData(<paramref name="updatable"/>)</c>.
+        /// Shortcut for <c>UpdateTransformJobManager&lt;TData&gt;.Instance.GetData(<paramref name="updatable"/>)</c>.
         /// </summary>
-        /// <seealso cref="UpdateTransformJobManager{,}.GetData"/>
-        public static TData GetJobData<TData, TJob>(this ITransformJobUpdatable<TData, TJob> updatable)
+        /// <seealso cref="UpdateTransformJobManager{}.GetData"/>
+        public static TData GetJobData<TData>(this ITransformJobUpdatable<TData> updatable)
             where TData : struct, IUpdateTransformJob
-            where TJob : struct, IInternalUpdateTransformJob<TData>
         {
-            return UpdateTransformJobManager<TData, TJob>.Instance.GetData(updatable);
+            return UpdateTransformJobManager<TData>.Instance.GetData(updatable);
         }
     }
 }
