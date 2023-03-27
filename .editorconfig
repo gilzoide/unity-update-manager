@@ -6,5 +6,5 @@ charset = utf-8
 indent_style = space
 indent_size = 2
 
-[*.{asmdef,cs}]
+[*.{asmdef,cs,shader}]
 indent_size = 4

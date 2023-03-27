@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using Gilzoide.UpdateManager.Extensions;
+using Gilzoide.UpdateManager.Internal;
 using Gilzoide.UpdateManager.Jobs;
 using UnityEngine;
 
@@ -31,43 +30,80 @@ namespace Gilzoide.UpdateManager
             return gameObject.AddComponent<UpdateManager>();
         }
 
-        private readonly List<IUpdatable> _updatableObjects = new List<IUpdatable>();
-        private readonly Dictionary<IUpdatable, int> _updatableIndexMap = new Dictionary<IUpdatable, int>();
-        private int _loopIndex;
+        private readonly FastRemoveList<IUpdatable> _updatableObjects = new FastRemoveList<IUpdatable>();
+        private readonly FastRemoveList<ILateUpdatable> _lateUpdatableObjects = new FastRemoveList<ILateUpdatable>();
+        private readonly FastRemoveList<IFixedUpdatable> _fixedUpdatableObjects = new FastRemoveList<IFixedUpdatable>();
 
         private void Update()
         {
             UpdateJobTime.InstanceRef.Refresh();
-            for (_loopIndex = 0; _loopIndex < _updatableObjects.Count; _loopIndex++)
+            using (var enumerator = _updatableObjects.GetEnumerator())
+            while (enumerator.MoveNext())
             {
                 try
                 {
-                    _updatableObjects[_loopIndex].ManagedUpdate();
+                    enumerator.Current.ManagedUpdate();
                 }
                 catch (Exception ex)
                 {
-                    Debug.Log(ex);
+                    Debug.LogException(ex);
                 }
             }
-            _loopIndex = 0;
+        }
+
+        private void LateUpdate()
+        {
+            using (var enumerator = _lateUpdatableObjects.GetEnumerator())
+            while (enumerator.MoveNext())
+            {
+                try
+                {
+                    enumerator.Current.ManagedLateUpdate();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
+                }
+            }
+        }
+
+        private void FixedUpdate()
+        {
+            using (var enumerator = _fixedUpdatableObjects.GetEnumerator())
+            while (enumerator.MoveNext())
+            {
+                try
+                {
+                    enumerator.Current.ManagedFixedUpdate();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
+                }
+            }
         }
 
         /// <summary>
-        /// Register <paramref name="updatable"/> to be updated every frame.
+        /// Register <paramref name="obj"/> to be updated every frame.
         /// </summary>
         /// <remarks>
         /// Registering updatable objects is O(1).
         /// Registering an object more than once is a no-op.
         /// </remarks>
-        public void Register(IUpdatable updatable)
+        public void Register(IManagedObject obj)
         {
-            if (_updatableIndexMap.ContainsKey(updatable))
+            if (obj is IUpdatable updatable)
             {
-                return;
+                _updatableObjects.Add(updatable);
             }
-
-            _updatableObjects.Add(updatable);
-            _updatableIndexMap.Add(updatable, _updatableObjects.Count - 1);
+            if (obj is ILateUpdatable lateUpdatable)
+            {
+                _lateUpdatableObjects.Add(lateUpdatable);
+            }
+            if (obj is IFixedUpdatable fixedUpdatable)
+            {
+                _fixedUpdatableObjects.Add(fixedUpdatable);
+            }
         }
 
         /// <summary>
@@ -77,36 +113,19 @@ namespace Gilzoide.UpdateManager
         /// Unregistering updatable objects is O(1).
         /// Unregistering an object that wasn't registered is a no-op.
         /// </remarks>
-        public void Unregister(IUpdatable updatable)
+        public void Unregister(IManagedObject obj)
         {
-            if (!_updatableIndexMap.TryGetValue(updatable, out int indexToRemove))
+            if (obj is IUpdatable updatable)
             {
-                return;
+                _updatableObjects.Remove(updatable);
             }
-
-            _updatableIndexMap.Remove(updatable);
-
-            // If removing the object that was just updated, make sure the
-            // new object swapped back to this index gets updated as well
-            if (indexToRemove == _loopIndex)
+            if (obj is ILateUpdatable lateUpdatable)
             {
-                _loopIndex--;
+                _lateUpdatableObjects.Remove(lateUpdatable);
             }
-            // If removing an object that was already updated while the loop is
-            // still running, swap it with current loop index to make sure we
-            // still update the last element that will be swapped back later
-            else if (indexToRemove < _loopIndex)
+            if (obj is IFixedUpdatable fixedUpdatable)
             {
-                _updatableObjects.Swap(_loopIndex, indexToRemove, out IUpdatable swappedUpdatable);
-                _updatableIndexMap[swappedUpdatable] = indexToRemove;
-                indexToRemove = _loopIndex;
-                _loopIndex--;
-            }
-
-            _updatableObjects.RemoveAtSwapBack(indexToRemove, out IUpdatable swappedBack);
-            if (swappedBack != null)
-            {
-                _updatableIndexMap[swappedBack] = indexToRemove;
+                _fixedUpdatableObjects.Remove(fixedUpdatable);
             }
         }
 
@@ -116,7 +135,8 @@ namespace Gilzoide.UpdateManager
         public void Clear()
         {
             _updatableObjects.Clear();
-            _updatableIndexMap.Clear();
+            _lateUpdatableObjects.Clear();
+            _fixedUpdatableObjects.Clear();
         }
     }
 }
