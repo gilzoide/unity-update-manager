@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Gilzoide.UpdateManager.Extensions;
 using Gilzoide.UpdateManager.Jobs;
@@ -37,17 +38,18 @@ namespace Gilzoide.UpdateManager
         private void Update()
         {
             UpdateJobTime.InstanceRef.Refresh();
-            try
+            for (_loopIndex = 0; _loopIndex < _updatableObjects.Count; _loopIndex++)
             {
-                for (_loopIndex = 0; _loopIndex < _updatableObjects.Count; _loopIndex++)
+                try
                 {
                     _updatableObjects[_loopIndex].ManagedUpdate();
                 }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
             }
-            finally
-            {
-                _loopIndex = 0;
-            }
+            _loopIndex = 0;
         }
 
         /// <summary>
