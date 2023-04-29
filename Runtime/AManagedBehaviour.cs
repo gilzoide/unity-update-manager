@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace Gilzoide.UpdateManager
@@ -8,10 +7,11 @@ namespace Gilzoide.UpdateManager
     /// </summary>
     /// <remarks>
     /// Instances will register themselves for updates in the <c>OnEnable</c> message and unregister in the <c>OnDisable</c> message.
+    /// <br/>
+    /// Implement <see cref="IUpdatable"/>, <see cref="ILateUpdatable"/> and/or <see cref="IFixedUpdatable"/> to be updated every frame using <see cref="UpdateManager"/>.
     /// </remarks>
     /// <seealso cref="UpdateManager"/>
-    [Obsolete("Prefer inheriting AManagedBehaviour and implementing the IUpdatable/ILateUpdatable/IFixedUpdatable interfaces directly.")]
-    public abstract class AUpdateManagerBehaviour : MonoBehaviour, IUpdatable
+    public abstract class AManagedBehaviour : MonoBehaviour, IManagedObject
     {
         protected virtual void OnEnable()
         {
@@ -22,11 +22,5 @@ namespace Gilzoide.UpdateManager
         {
             this.UnregisterInManager();
         }
-
-        /// <summary>
-        /// Implement this for receiving managed updates from <see cref="UpdateManager"/>.
-        /// </summary>
-        /// <seealso cref="UpdateManager"/>
-        public abstract void ManagedUpdate();
     }
 }

@@ -2,13 +2,13 @@ using UnityEngine;
 
 namespace Gilzoide.UpdateManager.Tests.Performance
 {
-    public class RotateManaged : AUpdateManagerBehaviour
+    public class RotateManaged : AManagedBehaviour, IUpdatable
     {
         public float Speed = 0;
         public float Delta = 0.1f;
         public float Max = 100;
 
-        public override void ManagedUpdate()
+        public void ManagedUpdate()
         {
             var rotation = Vector3.one * (Speed * Time.deltaTime);
             transform.localRotation *= Quaternion.Euler(rotation.x, rotation.y, rotation.z);

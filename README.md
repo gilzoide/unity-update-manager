@@ -9,10 +9,10 @@ More info on Update Manager vs traditional Update: https://github.com/Menyus777/
 
 
 ## Features
-- Use `UpdateManager` to call objects' `ManagedUpdate` method, bypassing Unity's native <-> C# interop
-- Both `MonoBehaviour` and pure C# classes are supported, just implement `IUpdatable` interface and register the object to be updated using `IUpdatable.RegisterInManager` extension method.
+- Use `UpdateManager` to call objects' `ManagedUpdate`, `ManagedLateUpdate` or `ManagedFixedUpdate` method, bypassing Unity's native <-> C# interop
+- Both `MonoBehaviour` and pure C# classes are supported, just implement `IUpdatable`, `ILateUpdatable` and/or `IFixedUpdatable` interface and register the object to be updated using its `RegisterInManager` extension method.
   
-  Remember to unregister the objects with `IUpdatable.UnregisterInManager` when necessary.
+  Remember to unregister the objects with `UnregisterInManager` when necessary.
 - Inherit `AUpdateManagerBehaviour` to automatically register/unregister MonoBehaviours in `UpdateManager` in their `OnEnable`/`OnDisable` messages
 
 Job System:
@@ -69,11 +69,21 @@ Or you can clone this repository or download a snapshot of it directly inside yo
 using Gilzoide.UpdateManager;
 using UnityEngine;
 
-public class MyManagedUpdatableBehaviour : AUpdateManagerBehaviour
+public class MyManagedUpdatableBehaviour : AManagedBehaviour, IUpdatable, ILateUpdatable, IFixedUpdatable
 {
-    public override void ManagedUpdate()
+    public void ManagedUpdate()
     {
-        Debug.Log("This will be called every frame!");
+        Debug.Log("Called every frame, alongside other scripts' Update message");
+    }
+
+    public void ManagedLateUpdate()
+    {
+        Debug.Log("Also called every frame, alongside other scripts' LateUpdate message");
+    }
+
+    public void ManagedFixedUpdate()
+    {
+        Debug.Log("Also called every frame, alongside other scripts' FixedUpdate message");
     }
 }
 ```
@@ -83,11 +93,21 @@ public class MyManagedUpdatableBehaviour : AUpdateManagerBehaviour
 using Gilzoide.UpdateManager;
 using UnityEngine;
 
-public class MyUpdatable : IUpdatable
+public class MyUpdatable : IUpdatable, ILateUpdatable, IFixedUpdatable
 {
     public void ManagedUpdate()
     {
-        Debug.Log("This will also be called every frame!");
+        Debug.Log("Called every frame, alongside other scripts' Update message");
+    }
+
+    public void ManagedLateUpdate()
+    {
+        Debug.Log("Also called every frame, alongside other scripts' LateUpdate message");
+    }
+
+    public void ManagedFixedUpdate()
+    {
+        Debug.Log("Also called every frame, alongside other scripts' FixedUpdate message");
     }
 
     // call this when you want Updates to start running
