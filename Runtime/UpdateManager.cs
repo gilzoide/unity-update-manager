@@ -6,13 +6,14 @@ using UnityEngine;
 namespace Gilzoide.UpdateManager
 {
     /// <summary>
-    /// Singleton MonoBehaviour that calls <see cref="IUpdatable.ManagedUpdate"/> to registered <see cref="IUpdatable"/> objects every frame.
+    /// Singleton MonoBehaviour that calls <see cref="IUpdatable.ManagedUpdate"/>, <see cref="ILateUpdatable.ManagedLateUpdate"/> or <see cref="IFixedUpdatable.ManagedFixedUpdate"/> to registered objects every frame.
     /// </summary>
     /// <remarks>
-    /// Any C# object can be registered for updates, including MonoBehaviours, pure C# classes and structs, as long as they implement <see cref="IUpdatable"/>.
+    /// Any C# object can be registered for updates, including MonoBehaviours, pure C# classes and structs, as long as they implement <see cref="IUpdatable"/>, <see cref="ILateUpdatable"/> or <see cref="IFixedUpdatable"/>.
+    /// Managed methods are called inside a try/catch block, so that exceptions don't stop other objects from updating.
     /// <br/>
-    /// This class doesn't implement any execution order mechanism, so don't rely on <see cref="IUpdatable.ManagedUpdate"/> methods being executed in any order.
-    /// In fact, the order of executed methods might change during the lifetime of the UpdateManager.
+    /// This class doesn't implement any execution order mechanism, so don't rely on managed methods being executed in any order.
+    /// In fact, the order of executed methods will most likely change during the lifetime of the UpdateManager.
     /// </remarks>
     public class UpdateManager : MonoBehaviour
     {

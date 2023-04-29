@@ -10,7 +10,7 @@ namespace Gilzoide.UpdateManager.Internal
     ///   <item>Adding duplicate values and removing items that are not present are both no-op.</item>
     ///   <item>
     ///     Items may be added and removed while the collection is being enumerated without raising exceptions.
-    ///     This collection guarantees that all items are enumerated, even if an insertions or removals happen during enumeration.
+    ///     This collection guarantees that all items are enumerated, even if insertions or removals happen during enumeration.
     ///   </item>
     ///   <item>
     ///     All enumerators reference the same list index, so avoid having more than one enumerator at the same time.
@@ -24,10 +24,18 @@ namespace Gilzoide.UpdateManager.Internal
         private readonly Dictionary<T, int> _indexMap = new Dictionary<T, int>();
         private int _loopIndex;
 
+        /// <returns>Get the number of items contained in the <see cref="FastRemoveList{T}"/>.</returns>
         public int Count => _list.Count;
 
+        /// <returns>Item registered at <paramref name="index"/> if index is valid, <see langword="default"/> otherwise.</returns>
         public T this[int index] => index >= 0 && index < Count ? _list[index] : default;
 
+        /// <summary>Add <paramref name="value"/> to the end of the list.</summary>
+        /// <returns><see langword="true"/> if value was not already present in the list and was successfully added, <see langword="false"/> otherwise.</returns>
+        /// <remarks>
+        /// Adding a value while the collection is being enumerated is permitted and won't raise exceptions.
+        /// This operation is O(1).
+        /// </remarks>
         public bool Add(T value)
         {
             if (_indexMap.ContainsKey(value))
@@ -40,6 +48,12 @@ namespace Gilzoide.UpdateManager.Internal
             return true;
         }
 
+        /// <summary>Remove <paramref name="value"/> from the list, if found.</summary>
+        /// <returns><see langword="true"/> if value was present in the list and was successfully removed, <see langword="false"/> otherwise.</returns>
+        /// <remarks>
+        /// Removing a value while the collection is being enumerated is permitted and won't raise exceptions.
+        /// This operation is O(1).
+        /// </remarks>
         public bool Remove(T value)
         {
             if (!_indexMap.TryGetValue(value, out int indexToRemove))
@@ -75,12 +89,14 @@ namespace Gilzoide.UpdateManager.Internal
             return true;
         }
 
+        /// <summary>Removes all values from the <see cref="FastRemoveList{T}"/>.</summary>
         public void Clear()
         {
             _list.Clear();
             _indexMap.Clear();
         }
 
+        /// <summary>Returns an enumerator that iterates through the <see cref="FastRemoveList{T}"/>.</summary>
         public Enumerator GetEnumerator()
         {
             return new Enumerator(this);
