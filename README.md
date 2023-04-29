@@ -69,11 +69,21 @@ Or you can clone this repository or download a snapshot of it directly inside yo
 using Gilzoide.UpdateManager;
 using UnityEngine;
 
-public class MyManagedUpdatableBehaviour : AUpdateManagerBehaviour
+public class MyManagedUpdatableBehaviour : AManagedBehaviour, IUpdatable, ILateUpdatable, IFixedUpdatable
 {
-    public override void ManagedUpdate()
+    public void ManagedUpdate()
     {
         Debug.Log("Called every frame, alongside other scripts' Update message");
+    }
+
+    public void ManagedLateUpdate()
+    {
+        Debug.Log("Also called every frame, alongside other scripts' LateUpdate message");
+    }
+
+    public void ManagedFixedUpdate()
+    {
+        Debug.Log("Also called every frame, alongside other scripts' FixedUpdate message");
     }
 }
 ```
@@ -87,7 +97,7 @@ public class MyUpdatable : IUpdatable, ILateUpdatable, IFixedUpdatable
 {
     public void ManagedUpdate()
     {
-        Debug.Log("Also called every frame, alongside other scripts' Update message");
+        Debug.Log("Called every frame, alongside other scripts' Update message");
     }
 
     public void ManagedLateUpdate()
