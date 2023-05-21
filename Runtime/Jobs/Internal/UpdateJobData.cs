@@ -43,5 +43,11 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         {
             _backup.CopyFrom(_data);
         }
+
+        public void TrimExcess()
+        {
+            _data.TrimExcess();
+            _backup.TrimExcess();
+        }
     }
 }

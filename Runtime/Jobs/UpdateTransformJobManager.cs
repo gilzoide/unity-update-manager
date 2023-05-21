@@ -25,11 +25,6 @@ namespace Gilzoide.UpdateManager.Jobs
         public static UpdateTransformJobManager<TData> Instance => _instance != null ? _instance : (_instance = new UpdateTransformJobManager<TData>());
         private static UpdateTransformJobManager<TData> _instance;
 
-        static UpdateTransformJobManager()
-        {
-            Application.quitting += () => _instance?.Dispose();
-        }
-
         protected override JobHandle ScheduleJob(JobHandle dependsOn)
         {
             var job = new UpdateTransformJob<TData>

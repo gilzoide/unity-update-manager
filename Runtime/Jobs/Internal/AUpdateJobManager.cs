@@ -20,12 +20,12 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         /// </remarks>
         public event Action<JobHandle> OnJobScheduled;
 
+        protected bool HavePendingProviderChanges => _dataProvidersToAdd.Count > 0 || _dataProvidersToRemove.Count > 0;
         protected readonly Dictionary<TDataProvider, int> _providerIndexMap = new Dictionary<TDataProvider, int>();
         protected readonly List<TDataProvider> _dataProviders = new List<TDataProvider>();
         protected readonly HashSet<TDataProvider> _dataProvidersToAdd = new HashSet<TDataProvider>();
         protected readonly SortedSet<int> _dataProvidersToRemove = new SortedSet<int>();
         protected readonly TJobData _jobData = new TJobData();
-        protected bool _isDirty => _dataProvidersToAdd.Count > 0 || _dataProvidersToRemove.Count > 0;
         protected JobHandle _jobHandle;
 
         protected abstract JobHandle ScheduleJob(JobHandle dependsOn);
@@ -39,10 +39,14 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         public AUpdateJobManager()
         {
             _dependencyManagers = UpdateJobOptions.GetDependsOnManagers<TData>();
+            Application.quitting += Dispose;
+            Application.lowMemory += _jobData.TrimExcess;
         }
 
         ~AUpdateJobManager()
         {
+            Application.quitting -= Dispose;
+            Application.lowMemory -= _jobData.TrimExcess;
             Dispose();
         }
 
@@ -50,7 +54,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         {
             _jobHandle.Complete();
 
-            if (_isDirty)
+            if (HavePendingProviderChanges)
             {
                 RefreshProviders();
             }

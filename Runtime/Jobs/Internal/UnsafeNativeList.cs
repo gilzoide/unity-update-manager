@@ -7,6 +7,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
 {
     public unsafe struct UnsafeNativeList<T> : IDisposable where T : struct
     {
+        public const float TrimCapacityThreshold = 0.9f;
         public static readonly long SizeOfT = UnsafeUtility.SizeOf<T>();
         public static readonly int AlignOfT = UnsafeUtility.AlignOf<T>();
 
@@ -113,6 +114,14 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         {
             EnsureCapacity(other._length, false);
             UnsafeUtility.MemCpy(_buffer, other._buffer, other.BufferLength);
+        }
+
+        public void TrimExcess()
+        {
+            if (_length < _capacity * TrimCapacityThreshold)
+            {
+                Realloc(_length, true);
+            }
         }
     }
 }

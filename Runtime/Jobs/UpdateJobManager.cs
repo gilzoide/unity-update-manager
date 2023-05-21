@@ -22,11 +22,6 @@ namespace Gilzoide.UpdateManager.Jobs
         public static UpdateJobManager<TData> Instance => _instance != null ? _instance : (_instance = new UpdateJobManager<TData>());
         private static UpdateJobManager<TData> _instance;
 
-        static UpdateJobManager()
-        {
-            Application.quitting += () => _instance?.Dispose();
-        }
-
         protected unsafe override JobHandle ScheduleJob(JobHandle dependsOn)
         {
             return new UpdateJob<TData>
