@@ -8,5 +8,12 @@
   "author": {
     "name": "Gil Barbosa Reis"
   },
-  "unity": "2018.1"
+  "unity": "2018.1",
+  "samples": [
+    {
+      "displayName": "Follow Target",
+      "description": "Target and automatic follower sample using job dependencies",
+      "path": "Samples~/FollowTarget"
+    }
+  ]
 }

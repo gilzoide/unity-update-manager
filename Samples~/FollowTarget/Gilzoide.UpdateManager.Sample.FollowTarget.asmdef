@@ -1,0 +1,18 @@
+{
+    "name": "Gilzoide.UpdateManager.Sample.FollowTarget",
+    "rootNamespace": "Gilzoide.UpdateManager.Sample.FollowTarget",
+    "references": [
+        "GUID:a086f2f33537541d1b1e8cde513be9e4",
+        "GUID:e0cd26848372d4e5c891c569017e11f1",
+        "GUID:2665a8d13d1b3f18800f46e256720795"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
