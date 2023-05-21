@@ -196,6 +196,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         {
             _isPendingUpdate = true;
 
+            _dependencyJobHandles.DisposeIfCreated();
             _dependencyJobHandles = new NativeArray<JobHandle>(_dependencyManagers.Length, Allocator.Persistent);
             for (int i = 0; i < _dependencyManagers.Length; i++)
             {
