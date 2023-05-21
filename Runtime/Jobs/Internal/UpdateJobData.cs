@@ -1,5 +1,6 @@
 using System;
 using Unity.Collections;
+using UnityEngine;
 
 namespace Gilzoide.UpdateManager.Jobs.Internal
 {
@@ -18,17 +19,18 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
 
         public virtual void EnsureCapacity(int newSize)
         {
-            _data.Realloc(newSize);
+            _data.EnsureCapacity(newSize);
         }
 
         public virtual void Add(TDataProvider dataProvider, int index)
         {
-            _data[index] = dataProvider.InitialJobData;
+            Debug.Assert(_data.Length == index, "FIXME: added index doesn't match data size");
+            _data.Add(dataProvider.InitialJobData);
         }
 
         public virtual void RemoveAtSwapBack(int index)
         {
-            _data.SwapBack(index);
+            _data.RemoveAtSwapBack(index);
         }
 
         public virtual void Dispose()

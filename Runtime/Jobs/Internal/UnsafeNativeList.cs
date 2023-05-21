@@ -7,16 +7,18 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
 {
     public unsafe struct UnsafeNativeList<T> : IDisposable where T : struct
     {
-        public static readonly int SizeOfT = UnsafeUtility.SizeOf<T>();
+        public static readonly long SizeOfT = UnsafeUtility.SizeOf<T>();
         public static readonly int AlignOfT = UnsafeUtility.AlignOf<T>();
 
         [NativeDisableUnsafePtrRestriction]
         private void* _buffer;
         private int _length;
+        private int _capacity;
         private Allocator Allocator;
 
         public int Length => _length;
-        public int BufferLength => _length * SizeOfT;
+        public long BufferLength => _length * SizeOfT;
+        public int Capacity => _capacity;
 
         public T this[int index]
         {
@@ -27,16 +29,9 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         public UnsafeNativeList(Allocator allocator)
         {
             _buffer = null;
+            _capacity = 0;
             _length = 0;
             Allocator = allocator;
-        }
-
-        public UnsafeNativeList(int length, Allocator allocator)
-        {
-            _buffer = null;
-            _length = 0;
-            Allocator = allocator;
-            Realloc(length, false);
         }
 
         public void Dispose()
@@ -45,42 +40,58 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             {
                 UnsafeUtility.Free(_buffer, Allocator);
                 _buffer = null;
-                _length = 0;
+            }
+            _capacity = 0;
+            _length = 0;
+        }
+
+        public void EnsureCapacity(int capacity, bool keepData = true)
+        {
+            if (_capacity < capacity)
+            {
+                Realloc(capacity, keepData);
             }
         }
 
-        public void Realloc(int newLength, bool keepData = true)
+        public void Realloc(int newCapacity, bool keepData = true)
         {
-            if (newLength == _length)
+            if (newCapacity == _capacity)
             {
                 return;
             }
-            if (newLength == 0)
+            if (newCapacity == 0)
             {
                 Dispose();
                 return;
             }
 
-            void* newBuffer = UnsafeUtility.Malloc(newLength * SizeOfT, AlignOfT, Allocator);
+            void* newBuffer = UnsafeUtility.Malloc(newCapacity * SizeOfT, AlignOfT, Allocator);
             if (_buffer != null)
             {
                 if (keepData)
                 {
-                    UnsafeUtility.MemCpy(newBuffer, _buffer, Mathf.Min(_length, newLength) * SizeOfT);
+                    UnsafeUtility.MemCpy(newBuffer, _buffer, Mathf.Min(_capacity, newCapacity) * SizeOfT);
                 }
-                Dispose();
+                UnsafeUtility.Free(_buffer, Allocator);
             }
             _buffer = newBuffer;
-            _length = newLength;
+            _capacity = newCapacity;
         }
 
-        public void SwapBack(int index)
+        public void Add(T value)
+        {
+            _length++;
+            ItemRefAt(_length - 1) = value;
+        }
+
+        public void RemoveAtSwapBack(int index)
         {
             int lastIndex = _length - 1;
             if (lastIndex > 0 && lastIndex != index)
             {
-                ItemRefAt(index) = ItemRefAt(_length - 1);
+                ItemRefAt(index) = ItemRefAt(lastIndex);
             }
+            _length--;
         }
 
         public ref T ItemRefAt(int index)
@@ -100,8 +111,8 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
 
         public void CopyFrom(UnsafeNativeList<T> other)
         {
-            Realloc(other._length, false);
-            UnsafeUtility.MemCpy(_buffer, other._buffer, BufferLength);
+            EnsureCapacity(other._length, false);
+            UnsafeUtility.MemCpy(_buffer, other._buffer, other.BufferLength);
         }
     }
 }
