@@ -43,7 +43,8 @@ namespace Gilzoide.UpdateManager.Jobs
         public static UpdateJobTime Instance => InstanceRef;
 
 #if HAVE_BURST
-        internal static ref UpdateJobTime InstanceRef => ref Unity.Burst.SharedStatic<UpdateJobTime>.GetOrCreate<UpdateJobTime>().Data;
+        internal static readonly Unity.Burst.SharedStatic<UpdateJobTime> SharedInstance = Unity.Burst.SharedStatic<UpdateJobTime>.GetOrCreate<UpdateJobTime>();
+        internal static ref UpdateJobTime InstanceRef => ref SharedInstance.Data;
 #else
         internal static UpdateJobTime InstanceRef;
 #endif
