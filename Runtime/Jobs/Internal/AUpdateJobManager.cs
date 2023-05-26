@@ -80,12 +80,14 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         /// </remarks>
         public void Register(TDataProvider provider)
         {
-            if (_providerIndexMap.ContainsKey(provider) || !_dataProvidersToAdd.Add(provider))
+            if (_providerIndexMap.TryGetValue(provider, out int index))
             {
+                _dataProvidersToRemove.Remove(index);
                 return;
             }
 
-            if (_dataProviders.Count == 0 && _dataProvidersToAdd.Count == 1)
+            bool addedToPending = _dataProvidersToAdd.Add(provider);
+            if (addedToPending && _dataProviders.Count == 0 && _dataProvidersToAdd.Count == 1)
             {
                 StartUpdating();
             }
