@@ -1,4 +1,3 @@
-#if HAVE_PERFORMANCE_TESTING
 using System.Collections;
 using System.Collections.Generic;
 using Unity.PerformanceTesting;
@@ -47,4 +46,3 @@ namespace Gilzoide.UpdateManager.Tests.Performance
         }
     }
 }
-#endif
