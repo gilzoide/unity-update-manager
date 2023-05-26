@@ -80,9 +80,10 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         /// </remarks>
         public void Register(TDataProvider provider)
         {
-            if (_providerIndexMap.TryGetValue(provider, out int index))
+            // Only bail out immediately if provider is already registered AND is not pending removal
+            // Providers marked for unregistration should be removed and re-registered to reset their job data
+            if (_providerIndexMap.TryGetValue(provider, out int index) && !_dataProvidersToRemove.Contains(index))
             {
-                _dataProvidersToRemove.Remove(index);
                 return;
             }
 
