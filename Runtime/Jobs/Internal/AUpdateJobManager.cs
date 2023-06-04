@@ -24,7 +24,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         protected readonly Dictionary<TDataProvider, int> _providerIndexMap = new Dictionary<TDataProvider, int>();
         protected readonly List<TDataProvider> _dataProviders = new List<TDataProvider>();
         protected readonly HashSet<TDataProvider> _dataProvidersToAdd = new HashSet<TDataProvider>();
-        protected readonly SortedSet<int> _dataProvidersToRemove = new SortedSet<int>();
+        protected readonly ReversedSortedList<int> _dataProvidersToRemove = new ReversedSortedList<int>();
         protected readonly TJobData _jobData = new TJobData();
         protected JobHandle _jobHandle;
 
@@ -169,7 +169,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
                 return;
             }
 
-            foreach (int indexBeingRemoved in _dataProvidersToRemove.Reverse())
+            foreach (int indexBeingRemoved in _dataProvidersToRemove)
             {
                 _providerIndexMap.Remove(_dataProviders[indexBeingRemoved]);
 
