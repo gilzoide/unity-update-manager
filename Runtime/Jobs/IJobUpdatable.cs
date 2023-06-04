@@ -43,6 +43,16 @@ namespace Gilzoide.UpdateManager.Jobs
         }
 
         /// <summary>
+        /// Shortcut for <c>UpdateJobManager&lt;TData&gt;.Instance.IsRegistered(<paramref name="updatable"/>)</c>.
+        /// </summary>
+        /// <seealso cref="UpdateJobManager{}.IsRegistered"/>
+        public static bool IsRegisteredInManager<TData>(this IJobUpdatable<TData> updatable)
+            where TData : struct, IUpdateJob
+        {
+            return UpdateJobManager<TData>.Instance.IsRegistered(updatable);
+        }
+
+        /// <summary>
         /// Shortcut for <c>UpdateJobManager&lt;TData&gt;.Instance.GetData(<paramref name="updatable"/>)</c>.
         /// </summary>
         /// <seealso cref="UpdateJobManager{}.GetData"/>

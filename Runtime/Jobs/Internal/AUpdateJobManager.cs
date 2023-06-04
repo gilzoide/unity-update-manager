@@ -110,6 +110,12 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             }
         }
 
+        /// <summary>Check whether <paramref name="provider"/> is registered in manager.</summary>
+        public bool IsRegistered(TDataProvider provider)
+        {
+            return _providerIndexMap.ContainsKey(provider);
+        }
+
         /// <summary>
         /// Get a copy of the job data from the last processed frame for <paramref name="provider"/>.
         /// </summary>

@@ -1,6 +1,5 @@
 using Gilzoide.UpdateManager.Jobs.Internal;
 using Unity.Jobs;
-using UnityEngine;
 using UnityEngine.Jobs;
 
 namespace Gilzoide.UpdateManager.Jobs
