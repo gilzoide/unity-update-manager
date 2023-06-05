@@ -38,12 +38,11 @@ namespace Gilzoide.UpdateManager
         private void Update()
         {
             UpdateJobTime.InstanceRef.Refresh();
-            using (var enumerator = _updatableObjects.GetEnumerator())
-            while (enumerator.MoveNext())
+            foreach (IUpdatable updatable in _updatableObjects)
             {
                 try
                 {
-                    enumerator.Current.ManagedUpdate();
+                    updatable.ManagedUpdate();
                 }
                 catch (Exception ex)
                 {
@@ -54,12 +53,11 @@ namespace Gilzoide.UpdateManager
 
         private void LateUpdate()
         {
-            using (var enumerator = _lateUpdatableObjects.GetEnumerator())
-            while (enumerator.MoveNext())
+            foreach (ILateUpdatable lateUpdatable in _lateUpdatableObjects)
             {
                 try
                 {
-                    enumerator.Current.ManagedLateUpdate();
+                    lateUpdatable.ManagedLateUpdate();
                 }
                 catch (Exception ex)
                 {
@@ -70,12 +68,11 @@ namespace Gilzoide.UpdateManager
 
         private void FixedUpdate()
         {
-            using (var enumerator = _fixedUpdatableObjects.GetEnumerator())
-            while (enumerator.MoveNext())
+            foreach (IFixedUpdatable fixedUpdatable in _fixedUpdatableObjects)
             {
                 try
                 {
-                    enumerator.Current.ManagedFixedUpdate();
+                    fixedUpdatable.ManagedFixedUpdate();
                 }
                 catch (Exception ex)
                 {
