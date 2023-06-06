@@ -1,3 +1,6 @@
+#if (UNITY_EDITOR || DEVELOPMENT_BUILD) && !UPDATE_MANAGER_DISABLE_PROFILER_MARKERS
+    #define ENABLE_PROFILER_MARKERS
+#endif
 using System;
 using Gilzoide.UpdateManager.Internal;
 using Gilzoide.UpdateManager.Jobs;
@@ -35,13 +38,16 @@ namespace Gilzoide.UpdateManager
         private readonly FastRemoveList<ILateUpdatable> _lateUpdatableObjects = new FastRemoveList<ILateUpdatable>();
         private readonly FastRemoveList<IFixedUpdatable> _fixedUpdatableObjects = new FastRemoveList<IFixedUpdatable>();
 
-        private void Update()
+        protected void Update()
         {
             UpdateJobTime.InstanceRef.Refresh();
             foreach (IUpdatable updatable in _updatableObjects)
             {
                 try
                 {
+#if ENABLE_PROFILER_MARKERS
+                    using (ProfilerMarkerMap.Get("ManagedUpdate", updatable))
+#endif
                     updatable.ManagedUpdate();
                 }
                 catch (Exception ex)
@@ -51,12 +57,15 @@ namespace Gilzoide.UpdateManager
             }
         }
 
-        private void LateUpdate()
+        protected void LateUpdate()
         {
             foreach (ILateUpdatable lateUpdatable in _lateUpdatableObjects)
             {
                 try
                 {
+#if ENABLE_PROFILER_MARKERS
+                    using (ProfilerMarkerMap.Get("ManagedLateUpdate", lateUpdatable))
+#endif
                     lateUpdatable.ManagedLateUpdate();
                 }
                 catch (Exception ex)
@@ -66,12 +75,15 @@ namespace Gilzoide.UpdateManager
             }
         }
 
-        private void FixedUpdate()
+        protected void FixedUpdate()
         {
             foreach (IFixedUpdatable fixedUpdatable in _fixedUpdatableObjects)
             {
                 try
                 {
+#if ENABLE_PROFILER_MARKERS
+                    using (ProfilerMarkerMap.Get("ManagedFixedUpdate", fixedUpdatable))
+#endif
                     fixedUpdatable.ManagedFixedUpdate();
                 }
                 catch (Exception ex)
