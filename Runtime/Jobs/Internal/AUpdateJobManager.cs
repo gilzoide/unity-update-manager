@@ -40,13 +40,11 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         {
             _dependencyManagers = UpdateJobOptions.GetDependsOnManagers<TData>();
             Application.quitting += Dispose;
-            Application.lowMemory += _jobData.TrimExcess;
         }
 
         ~AUpdateJobManager()
         {
             Application.quitting -= Dispose;
-            Application.lowMemory -= _jobData.TrimExcess;
             Dispose();
         }
 
