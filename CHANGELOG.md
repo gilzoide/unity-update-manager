@@ -1,5 +1,42 @@
 # Changelog
-## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.1.1...HEAD)
+## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.2.0...HEAD)
+### Added
+- [Follow Target](Samples~/FollowTarget) sample.
+- `AUpdateJobManager.IsRegistered` method to check if an object is registered for updates.
+  Extension methods `IJobUpdatable.IsRegisteredInManager` and `ITransformJobUpdatable.IsRegisteredInManager` were also added.
+- Profiler markers for methods managed by `UpdateManager`.
+
+### Changed
+- Only reallocate job data arrays when growing their capacity.
+  This avoids CPU spikes when rapidly removing/adding objects in update job managers.
+- Hold Burst shared static in a variable instead of calling `GetOrCreate` everytime `UpdateJobTime` is accessed.
+- Use a custom `SortedList` implementation instead of `SortedSet`.
+  This avoids heap allocations while iterating over the values.
+
+### Fixed
+- Dispose of dependency job handles array before reallocating it.
+- Reset job data when removing and re-adding an object in the same frame.
+  This avoids maintaining the wrong state between registrations.
+
+
+## [1.2.0](https://github.com/gilzoide/unity-update-manager/releases/tag/1.2.0)
+### Added
+- Support for managed `LateUpdate` and `FixedUpdate` methods in `UpdateManager`.
+  Similar to managed `Update` methods, all you need to do is inherit the `ILateUpdatable` or `IFixedUpdatable` interface and register the object in the manager using the `RegisterInManager()` extension method.
+
+### Deprecated
+- `AUpdateManagerBehaviour`: Prefer inheriting `AManagedBehaviour` and implementing the `IUpdatable`/`ILateUpdatable`/`IFixedUpdatable` interfaces directly.
+
+### Fixed
+- `UpdateJobTime.frameCount` type to be `int` instead of `float`.
+  This makes it compatible with `UnityEngine.Time.frameCount`.
+
+
+## [1.1.2](https://github.com/gilzoide/unity-update-manager/releases/tag/1.1.2)
+### Changed
+- `UpdateManager` now uses try/catch blocks for each `ManagedUpdate` call.
+  This way, if any managed update call fails, the other ones are not affected.
+
 
 ## [1.1.1](https://github.com/gilzoide/unity-update-manager/releases/tag/1.1.1)
 ### Changed
@@ -15,6 +52,7 @@
 
 ### Fixed
 - Managed jobs with dependencies now work for Burst-compiled jobs.
+
 
 ## [1.1.0](https://github.com/gilzoide/unity-update-manager/releases/tag/1.1.0)
 ### Added
