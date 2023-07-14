@@ -1,5 +1,8 @@
 # Changelog
-## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.2.0...HEAD)
+## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.3.0...HEAD)
+
+
+## [1.3.0](https://github.com/gilzoide/unity-update-manager/releases/tag/1.3.0)
 ### Added
 - [Follow Target](Samples~/FollowTarget) sample.
 - `AUpdateJobManager.IsRegistered` method to check if an object is registered for updates.
