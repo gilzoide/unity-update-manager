@@ -257,6 +257,11 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
 
         private void SynchronizeJobData(HashSet<IJobDataSynchronizer<TData>> synchronizers)
         {
+            if (synchronizers.Count == 0)
+            {
+                return;
+            }
+            
             foreach (IJobDataSynchronizer<TData> jobDataSynchronizer in synchronizers)
             {
                 Debug.Assert(jobDataSynchronizer is TDataProvider, "[UpdateJobManager] FIXME: job data synchronizer should be of a job provider type");
