@@ -2,6 +2,10 @@
 ## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.3.0...HEAD)
 ### Added
 - `BurstUpdateJob<>`/`BurstUpdateTransformJob<>`: Burst-compiled versions of `UpdateJob<>`/`UpdateTransformJob<>`
+- Update job managers now support job data synchronization.
+  Implement `IJobDataSynchronizer<>` in job providers to synchronize data from registered jobs.
+  Data synchronization occurs right after completing jobs, but before scheduling the new batch, so it is safe to modify their data.
+  One must explicitly register objects for data synchronization by calling `SynchronizeJobDataOnce` for a one-time data synchronization next frame, or by passing true to `RegisterInManager` to sync data every frame.
 
 ### Changed
 - `UpdateJob<>`/`UpdateTransformJob<>` are not marked for compilation with Burst anymore.
