@@ -26,10 +26,10 @@ namespace Gilzoide.UpdateManager.Jobs
         /// Shortcut for <c>UpdateJobManager&lt;TData&gt;.Instance.Register(<paramref name="updatable"/>)</c>.
         /// </summary>
         /// <seealso cref="UpdateJobManager{}.Register"/>
-        public static void RegisterInManager<TData>(this IJobUpdatable<TData> updatable)
+        public static void RegisterInManager<TData>(this IJobUpdatable<TData> updatable, bool syncEveryFrame = false)
             where TData : struct, IUpdateJob
         {
-            UpdateJobManager<TData>.Instance.Register(updatable);
+            UpdateJobManager<TData>.Instance.Register(updatable, syncEveryFrame);
         }
 
         /// <summary>
@@ -40,6 +40,16 @@ namespace Gilzoide.UpdateManager.Jobs
             where TData : struct, IUpdateJob
         {
             UpdateJobManager<TData>.Instance.Unregister(updatable);
+        }
+
+        /// <summary>
+        /// Shortcut for <c>UpdateJobManager&lt;TData&gt;.Instance.UnregisterSynchronization(<paramref name="updatable"/>)</c>.
+        /// </summary>
+        /// <seealso cref="UpdateJobManager{}.UnregisterSynchronization"/>
+        public static void UnregisterSynchronizationInManager<TData>(this IJobUpdatable<TData> updatable)
+            where TData : struct, IUpdateJob
+        {
+            UpdateJobManager<TData>.Instance.UnregisterSynchronization(updatable);
         }
 
         /// <summary>
@@ -60,6 +70,16 @@ namespace Gilzoide.UpdateManager.Jobs
             where TData : struct, IUpdateJob
         {
             return UpdateJobManager<TData>.Instance.GetData(updatable);
+        }
+
+        /// <summary>
+        /// Shortcut for <c>UpdateJobManager&lt;TData&gt;.Instance.SynchronizeJobDataOnce(<paramref name="updatable"/>)</c>.
+        /// </summary>
+        /// <seealso cref="UpdateJobManager{}.SynchronizeJobDataOnce"/>
+        public static void SynchronizeJobDataOnce<TData>(this IJobUpdatable<TData> updatable)
+            where TData : struct, IUpdateJob
+        {
+            UpdateJobManager<TData>.Instance.SynchronizeJobDataOnce(updatable);
         }
     }
 }
