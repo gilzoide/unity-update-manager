@@ -12,6 +12,9 @@ namespace Gilzoide.UpdateManager.Jobs
     /// Provider registration/unregistration during data synchronization is supported and
     /// will be effective in the same frame.
     /// </remarks>
+    /// <seealso cref="AUpdateJobManager{,,}.Register"/>
+    /// <seealso cref="AUpdateJobManager{,,}.SynchronizeJobDataOnce"/>
+    /// <seealso cref="AUpdateJobManager{,,}.UnregisterSynchronization"/>
     public interface IJobDataSynchronizer<T>
     {
         void SyncJobData(ref T jobData);
