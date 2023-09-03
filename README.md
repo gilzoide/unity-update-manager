@@ -13,7 +13,8 @@ More info on Update Manager vs traditional Update: https://github.com/Menyus777/
 - Both `MonoBehaviour` and pure C# classes are supported, just implement `IUpdatable`, `ILateUpdatable` and/or `IFixedUpdatable` interface and register the object to be updated using its `RegisterInManager` extension method.
   
   Remember to unregister the objects with `UnregisterInManager` when necessary.
-- Inherit `AUpdateManagerBehaviour` to automatically register/unregister MonoBehaviours in `UpdateManager` in their `OnEnable`/`OnDisable` messages.
+- Inherit `AManagedBehaviour` to automatically register/unregister MonoBehaviours in `UpdateManager` in their `OnEnable`/`OnDisable` messages.
+  The class still needs to implement the `IUpdatable`, `ILateUpdatable` and/or `IFixedUpdatable` interfaces for any managed update methods to be run.
 - Profiler markers are used to show managed methods in the Unity profiler.
 
 Job System:
