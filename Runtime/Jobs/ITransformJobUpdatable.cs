@@ -26,7 +26,17 @@ namespace Gilzoide.UpdateManager.Jobs
         /// Shortcut for <c>UpdateTransformJobManager&lt;TData&gt;.Instance.Register(<paramref name="updatable"/>)</c>.
         /// </summary>
         /// <seealso cref="UpdateTransformJobManager{}.Register"/>
-        public static void RegisterInManager<TData>(this ITransformJobUpdatable<TData> updatable, bool syncEveryFrame = false)
+        public static void RegisterInManager<TData>(this ITransformJobUpdatable<TData> updatable)
+            where TData : struct, IUpdateTransformJob
+        {
+            UpdateTransformJobManager<TData>.Instance.Register(updatable);
+        }
+
+        /// <summary>
+        /// Shortcut for <c>UpdateTransformJobManager&lt;TData&gt;.Instance.Register(<paramref name="updatable"/>, <paramref name="syncEveryFrame"/>)</c>.
+        /// </summary>
+        /// <seealso cref="UpdateTransformJobManager{}.Register"/>
+        public static void RegisterInManager<TData>(this ITransformJobUpdatable<TData> updatable, bool syncEveryFrame)
             where TData : struct, IUpdateTransformJob
         {
             UpdateTransformJobManager<TData>.Instance.Register(updatable, syncEveryFrame);
