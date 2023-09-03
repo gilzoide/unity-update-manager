@@ -7,8 +7,6 @@ namespace Gilzoide.UpdateManager.Jobs
     /// <remarks>
     /// Job data is always synchronized while no jobs are running, so that it can be safely modified.
     /// <br/>
-    /// To register 
-    /// <br/>
     /// Provider registration/unregistration during data synchronization is supported and
     /// will be effective in the same frame.
     /// </remarks>
