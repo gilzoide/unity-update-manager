@@ -12,9 +12,15 @@ namespace Gilzoide.UpdateManager.Jobs
     public abstract class AJobBehaviour<TData> : MonoBehaviour, ITransformJobUpdatable<TData>
         where TData : struct, IUpdateTransformJob
     {
+        /// <summary>
+        /// Whether job data should be synchronized every frame.
+        /// Only meaningful in subclasses implementing <see cref="IJobDataSynchronizer{}"/>.
+        /// </summary>
+        public virtual bool SynchronizeJobDataEveryFrame => true;
+
         protected virtual void OnEnable()
         {
-            this.RegisterInManager();
+            this.RegisterInManager(SynchronizeJobDataEveryFrame);
         }
 
         protected virtual void OnDisable()
