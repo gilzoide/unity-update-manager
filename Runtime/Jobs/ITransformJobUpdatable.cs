@@ -33,6 +33,16 @@ namespace Gilzoide.UpdateManager.Jobs
         }
 
         /// <summary>
+        /// Shortcut for <c>UpdateTransformJobManager&lt;TData&gt;.Instance.Register(<paramref name="updatable"/>, <paramref name="syncEveryFrame"/>)</c>.
+        /// </summary>
+        /// <seealso cref="UpdateTransformJobManager{}.Register"/>
+        public static void RegisterInManager<TData>(this ITransformJobUpdatable<TData> updatable, bool syncEveryFrame)
+            where TData : struct, IUpdateTransformJob
+        {
+            UpdateTransformJobManager<TData>.Instance.Register(updatable, syncEveryFrame);
+        }
+
+        /// <summary>
         /// Shortcut for <c>UpdateTransformJobManager&lt;TData&gt;.Instance.Unregister(<paramref name="updatable"/>)</c>.
         /// </summary>
         /// <seealso cref="UpdateTransformJobManager{}.Unregister"/>
@@ -40,6 +50,16 @@ namespace Gilzoide.UpdateManager.Jobs
             where TData : struct, IUpdateTransformJob
         {
             UpdateTransformJobManager<TData>.Instance.Unregister(updatable);
+        }
+
+        /// <summary>
+        /// Shortcut for <c>UpdateTransformJobManager&lt;TData&gt;.Instance.UnregisterSynchronization(<paramref name="updatable"/>)</c>.
+        /// </summary>
+        /// <seealso cref="UpdateTransformJobManager{}.UnregisterSynchronization"/>
+        public static void UnregisterSynchronizationInManager<TData>(this ITransformJobUpdatable<TData> updatable)
+            where TData : struct, IUpdateTransformJob
+        {
+            UpdateTransformJobManager<TData>.Instance.UnregisterSynchronization(updatable);
         }
 
         /// <summary>
@@ -60,6 +80,16 @@ namespace Gilzoide.UpdateManager.Jobs
             where TData : struct, IUpdateTransformJob
         {
             return UpdateTransformJobManager<TData>.Instance.GetData(updatable);
+        }
+
+        /// <summary>
+        /// Shortcut for <c>UpdateTransformJobManager&lt;TData&gt;.Instance.SynchronizeJobDataOnce(<paramref name="updatable"/>)</c>.
+        /// </summary>
+        /// <seealso cref="UpdateJobManager{}.SynchronizeJobDataOnce"/>
+        public static void SynchronizeJobDataOnce<TData>(this ITransformJobUpdatable<TData> updatable)
+            where TData : struct, IUpdateTransformJob
+        {
+            UpdateTransformJobManager<TData>.Instance.SynchronizeJobDataOnce(updatable);
         }
     }
 }

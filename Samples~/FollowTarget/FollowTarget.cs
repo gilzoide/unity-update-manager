@@ -23,7 +23,8 @@ namespace Gilzoide.UpdateManager.Sample.FollowTarget
         }
     }
 
-    public class FollowTarget : AJobBehaviour<FollowTargetJob, BurstUpdateTransformJob<FollowTargetJob>>
+    public class FollowTarget : AJobBehaviour<FollowTargetJob, BurstUpdateTransformJob<FollowTargetJob>>,
+        IJobDataSynchronizer<FollowTargetJob>
     {
         [SerializeField] private Target target;
         [SerializeField] private float speed;
@@ -35,5 +36,10 @@ namespace Gilzoide.UpdateManager.Sample.FollowTarget
             Speed = speed,
             MinimumDistance = minimumDistance,
         };
+
+        public void SyncJobData(ref FollowTargetJob jobData)
+        {
+            jobData = InitialJobData;
+        }
     }
 }

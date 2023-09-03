@@ -24,7 +24,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
 
         public virtual void Add(TDataProvider dataProvider, int index)
         {
-            Debug.Assert(_data.Length == index, "FIXME: added index doesn't match data size");
+            Debug.Assert(_data.Length == index, "[UpdateJobData] FIXME: added index doesn't match data size");
             _data.Add(dataProvider.InitialJobData);
         }
 
