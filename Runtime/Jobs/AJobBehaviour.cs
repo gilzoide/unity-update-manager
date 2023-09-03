@@ -14,9 +14,13 @@ namespace Gilzoide.UpdateManager.Jobs
     {
         /// <summary>
         /// Whether job data should be synchronized every frame.
-        /// Only meaningful in subclasses implementing <see cref="IJobDataSynchronizer{}"/>.
+        /// By default, returns false.
         /// </summary>
-        public virtual bool SynchronizeJobDataEveryFrame => true;
+        /// <remarks>
+        /// Override in subclasses implementing <see cref="IJobDataSynchronizer{}"/> and return true
+        /// to automatically register objects for job data synchronization every frame.
+        /// </remarks>
+        public virtual bool SynchronizeJobDataEveryFrame => false;
 
         protected virtual void OnEnable()
         {
