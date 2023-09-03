@@ -1,5 +1,12 @@
 # Changelog
 ## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.3.0...HEAD)
+### Added
+- `BurstUpdateJob<>`/`BurstUpdateTransformJob<>`: Burst-compiled versions of `UpdateJob<>`/`UpdateTransformJob<>`
+
+### Changed
+- `UpdateJob<>`/`UpdateTransformJob<>` are not marked for compilation with Burst anymore.
+  This avoids warnings about the job being marked for compilation, but no concrete version of the type being defined.
+  Use `BurstUpdateJob<>`/`BurstUpdateTransformJob<>` instead if you want Burst-compiled update jobs.
 
 
 ## [1.3.0](https://github.com/gilzoide/unity-update-manager/releases/tag/1.3.0)
