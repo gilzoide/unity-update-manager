@@ -75,6 +75,19 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         /// <summary>
         /// Register <paramref name="provider"/> to have its update job scheduled every frame.
         /// </summary>
+        /// <remarks>
+        /// Registering job provider objects is O(1).
+        /// Registering an object more than once is a no-op.
+        /// </remarks>
+        public void Register(TDataProvider provider)
+        {
+            Register(provider, false);
+        }
+
+        /// <summary>
+        /// Register <paramref name="provider"/> to have its update job scheduled every frame
+        /// and optionally synchronize job data every frame.
+        /// </summary>
         /// <param name="provider">Job data provider</param>
         /// <param name="syncEveryFrame">
         ///   If true and <paramref name="provider"/> implements <see cref="IJobDataSynchronizer{}"/>,
@@ -84,7 +97,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         /// Registering job provider objects is O(1).
         /// Registering an object more than once is a no-op.
         /// </remarks>
-        public void Register(TDataProvider provider, bool syncEveryFrame = false)
+        public void Register(TDataProvider provider, bool syncEveryFrame)
         {
             if (syncEveryFrame && provider is IJobDataSynchronizer<TData> syncJobData)
             {
