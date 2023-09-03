@@ -52,13 +52,16 @@ namespace Gilzoide.UpdateManager.Jobs
 #if UNITY_EDITOR
         /// <summary>
         /// Whether job data should be synchronized in the <c>OnValidate</c> message.
-        /// Only meaningful in subclasses implementing <see cref="IJobDataSynchronizer{}"/>.
+        /// By default, returns true.
         /// </summary>
+        /// <remarks>
+        /// Override in subclasses implementing <see cref="IJobDataSynchronizer{}"/> and return false
+        /// to avoid automatic job data synchronization during <c>OnValidate</c>.
+        /// </remarks>
         protected virtual bool SynchronizeJobDataOnValidate => true;
 
         /// <summary>
-        /// Synchronizes job data on Play mode.
-        /// Only meaningful in subclasses implementing <see cref="IJobDataSynchronizer{}"/>.
+        /// Synchronizes job data on Play mode if <see cref="SynchronizeJobDataOnValidate"/> returns true.
         /// </summary>
         protected virtual void OnValidate()
         {
