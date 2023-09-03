@@ -26,7 +26,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         protected readonly HashSet<TDataProvider> _dataProvidersToAdd = new HashSet<TDataProvider>();
         protected readonly ReversedSortedList<int> _dataProvidersToRemove = new ReversedSortedList<int>();
         protected readonly HashSet<IJobDataSynchronizer<TData>> _dataProvidersToSync = new HashSet<IJobDataSynchronizer<TData>>();
-        protected readonly HashSet<IJobDataSynchronizer<TData>> _dataProvidersToSyncThisFrame = new HashSet<IJobDataSynchronizer<TData>>();
+        protected readonly HashSet<IJobDataSynchronizer<TData>> _dataProvidersToSyncOnce = new HashSet<IJobDataSynchronizer<TData>>();
         protected readonly TJobData _jobData = new TJobData();
         protected JobHandle _jobHandle;
 
@@ -99,10 +99,10 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         /// </remarks>
         public void Register(TDataProvider provider, bool syncEveryFrame)
         {
-            if (syncEveryFrame && provider is IJobDataSynchronizer<TData> syncJobData)
+            if (syncEveryFrame && provider is IJobDataSynchronizer<TData> jobDataSynchronizer)
             {
-                _dataProvidersToSync.Add(syncJobData);
-                _dataProvidersToSyncThisFrame.Remove(syncJobData);
+                _dataProvidersToSync.Add(jobDataSynchronizer);
+                _dataProvidersToSyncOnce.Remove(jobDataSynchronizer);
             }
             // Avoid adding provider to pending addition list if it is already registered AND is not pending removal
             // Providers marked for unregistration should be removed and re-registered to reset their job data
@@ -147,7 +147,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             if (provider is IJobDataSynchronizer<TData> jobDataSynchronizer)
             {
                 _dataProvidersToSync.Remove(jobDataSynchronizer);
-                _dataProvidersToSyncThisFrame.Remove(jobDataSynchronizer);
+                _dataProvidersToSyncOnce.Remove(jobDataSynchronizer);
             }
         }
 
@@ -185,7 +185,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
                 && provider is IJobDataSynchronizer<TData> jobDataSynchronizer
                 && !_dataProvidersToSync.Contains(jobDataSynchronizer))
             {
-                _dataProvidersToSyncThisFrame.Add(jobDataSynchronizer);
+                _dataProvidersToSyncOnce.Add(jobDataSynchronizer);
             }
         }
 
@@ -207,7 +207,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             _dataProvidersToAdd.Clear();
             _dataProvidersToRemove.Clear();
             _dataProvidersToSync.Clear();
-            _dataProvidersToSyncThisFrame.Clear();
+            _dataProvidersToSyncOnce.Clear();
 
             StopUpdating();
         }
@@ -264,8 +264,8 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         private void SynchronizeJobData()
         {
             SynchronizeJobData(_dataProvidersToSync);
-            SynchronizeJobData(_dataProvidersToSyncThisFrame);
-            _dataProvidersToSyncThisFrame.Clear();
+            SynchronizeJobData(_dataProvidersToSyncOnce);
+            _dataProvidersToSyncOnce.Clear();
         }
 
         private void SynchronizeJobData(HashSet<IJobDataSynchronizer<TData>> synchronizers)
