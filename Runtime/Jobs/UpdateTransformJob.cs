@@ -16,6 +16,7 @@ namespace Gilzoide.UpdateManager.Jobs
 
 #if HAVE_BURST
     [Unity.Burst.BurstCompile]
+#endif
     public struct BurstUpdateTransformJob<TData> : IInternalUpdateTransformJob<TData>
         where TData : struct, IUpdateTransformJob
     {
@@ -26,5 +27,4 @@ namespace Gilzoide.UpdateManager.Jobs
             Data.ItemRefAt(index).Execute(transform);
         }
     }
-#endif
 }

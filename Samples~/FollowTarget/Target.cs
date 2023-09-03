@@ -16,11 +16,7 @@ namespace Gilzoide.UpdateManager.Sample.FollowTarget
         }
     }
 
-#if HAVE_BURST
     public class Target : AJobBehaviour<TargetJob, BurstUpdateTransformJob<TargetJob>>
-#else
-    public class Target : AJobBehaviour<TargetJob>
-#endif
     {
         public NativeReference<Vector3> PositionReference => positionReference;
         private NativeReference<Vector3> positionReference;

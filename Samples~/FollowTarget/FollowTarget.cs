@@ -23,11 +23,7 @@ namespace Gilzoide.UpdateManager.Sample.FollowTarget
         }
     }
 
-#if HAVE_BURST
     public class FollowTarget : AJobBehaviour<FollowTargetJob, BurstUpdateTransformJob<FollowTargetJob>>
-#else
-    public class FollowTarget : AJobBehaviour<FollowTargetJob>
-#endif
     {
         [SerializeField] private Target target;
         [SerializeField] private float speed;

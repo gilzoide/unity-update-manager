@@ -12,7 +12,7 @@ namespace Gilzoide.UpdateManager.Jobs
 
     /// <summary>
     /// Alias for <see cref="IJobUpdatable{}"/>.
-    /// Pass <c>UpdateJob&lt;<typeparamref name="TData"/>&gt;</c> as <typeparamref name="TJob"/> to Burst compile your job.
+    /// Pass <c>BurstUpdateJob&lt;<typeparamref name="TData"/>&gt;</c> as <typeparamref name="TJob"/> to Burst compile your job.
     /// </summary>
     public interface IJobUpdatable<TData, TJob> : IJobUpdatable<TData>
         where TData : struct, IUpdateJob
