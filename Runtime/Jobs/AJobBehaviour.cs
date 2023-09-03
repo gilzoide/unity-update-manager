@@ -44,6 +44,26 @@ namespace Gilzoide.UpdateManager.Jobs
         /// </summary>
         /// <seealso cref="UpdateTransformJobManager{}.GetData"/>
         public TData JobData => this.GetJobData();
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Whether job data should be synchronized in the <c>OnValidate</c> message.
+        /// Only meaningful in subclasses implementing <see cref="IJobDataSynchronizer{}"/>.
+        /// </summary>
+        protected virtual bool SynchronizeJobDataOnValidate => true;
+
+        /// <summary>
+        /// Synchronizes job data on Play mode.
+        /// Only meaningful in subclasses implementing <see cref="IJobDataSynchronizer{}"/>.
+        /// </summary>
+        protected virtual void OnValidate()
+        {
+            if (Application.isPlaying && SynchronizeJobDataOnValidate)
+            {
+                this.SynchronizeJobDataOnce();
+            }
+        }
+#endif
     }
 
     /// <summary>
