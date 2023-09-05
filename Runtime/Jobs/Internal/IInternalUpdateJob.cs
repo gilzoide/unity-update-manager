@@ -1,7 +1,6 @@
-using Gilzoide.UpdateManager.Jobs.Internal;
 using Unity.Jobs;
 
-namespace Gilzoide.UpdateManager
+namespace Gilzoide.UpdateManager.Jobs.Internal
 {
     public interface IInternalUpdateJob<TData> : IJobParallelFor
         where TData : struct
