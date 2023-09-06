@@ -254,10 +254,10 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
 
             foreach (TDataProvider provider in _dataProvidersToAdd)
             {
-                _dataProviders.Add(provider);
-                int index = _dataProviders.Count - 1;
-                _providerIndexMap[provider] = index;
+                int index = _dataProviders.Count;
                 _jobData.Add(provider, index);
+                _providerIndexMap[provider] = index;
+                _dataProviders.Add(provider);
             }
             _dataProvidersToAdd.Clear();
         }
