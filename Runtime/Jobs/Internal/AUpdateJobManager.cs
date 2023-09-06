@@ -152,10 +152,11 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             }
         }
 
-        /// <summary>Check whether <paramref name="provider"/> is registered in manager.</summary>
+        /// <summary>Check whether <paramref name="provider"/> is registered or pending registration in manager.</summary>
         public bool IsRegistered(TDataProvider provider)
         {
-            return _providerIndexMap.ContainsKey(provider);
+            return _dataProvidersToAdd.Contains(provider)
+                || (_providerIndexMap.TryGetValue(provider, out int index) && !_dataProvidersToRemove.Contains(index));
         }
 
         /// <summary>

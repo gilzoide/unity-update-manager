@@ -11,6 +11,8 @@
 - `UpdateJob<>`/`UpdateTransformJob<>` are not marked for compilation with Burst anymore.
   This avoids warnings about the job being marked for compilation, but no concrete version of the type being defined.
   Use `BurstUpdateJob<>`/`BurstUpdateTransformJob<>` instead if you want Burst-compiled update jobs.
+- `AUpdateJobManager.IsRegistered` now checks for pending additions/removals.
+  It now returns true if provider is already pending addition and returns false if provider is present in map, but also pending removal.
 
 
 ## [1.3.0](https://github.com/gilzoide/unity-update-manager/releases/tag/1.3.0)
