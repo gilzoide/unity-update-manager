@@ -27,6 +27,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         protected readonly ReversedSortedList<int> _dataProvidersToRemove = new ReversedSortedList<int>();
         protected readonly HashSet<IJobDataSynchronizer<TData>> _dataProvidersToSyncEveryFrame = new HashSet<IJobDataSynchronizer<TData>>();
         protected readonly HashSet<IJobDataSynchronizer<TData>> _dataProvidersToSyncOnce = new HashSet<IJobDataSynchronizer<TData>>();
+        protected readonly List<IJobDataSynchronizer<TData>> _hashSetFrozenIterator = new List<IJobDataSynchronizer<TData>>();
         protected readonly TJobData _jobData = new TJobData();
         protected JobHandle _jobHandle;
 
@@ -275,7 +276,8 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
                 return;
             }
             
-            foreach (IJobDataSynchronizer<TData> jobDataSynchronizer in synchronizers)
+            _hashSetFrozenIterator.AddRange(synchronizers);
+            foreach (IJobDataSynchronizer<TData> jobDataSynchronizer in _hashSetFrozenIterator)
             {
                 Debug.Assert(jobDataSynchronizer is TDataProvider, "[UpdateJobManager] FIXME: job data synchronizer should be of a job provider type");
                 if (_providerIndexMap.TryGetValue((TDataProvider) jobDataSynchronizer, out int index))
@@ -290,6 +292,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
                     }
                 }
             }
+            _hashSetFrozenIterator.Clear();
         }
 
         private void StartUpdating()
