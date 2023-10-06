@@ -1,5 +1,8 @@
 # Changelog
-## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.3.0...HEAD)
+## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.4.0...HEAD)
+
+
+## [1.4.0](https://github.com/gilzoide/unity-update-manager/releases/tag/1.4.0)
 ### Added
 - `BurstUpdateJob<>`/`BurstUpdateTransformJob<>`: Burst-compiled versions of `UpdateJob<>`/`UpdateTransformJob<>`
 - Update job managers now support job data synchronization.
