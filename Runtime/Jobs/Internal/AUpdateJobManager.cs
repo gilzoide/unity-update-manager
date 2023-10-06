@@ -25,6 +25,9 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         protected readonly List<TDataProvider> _dataProviders = new List<TDataProvider>();
         protected readonly HashSet<TDataProvider> _dataProvidersToAdd = new HashSet<TDataProvider>();
         protected readonly ReversedSortedList<int> _dataProvidersToRemove = new ReversedSortedList<int>();
+        protected readonly HashSet<IJobDataSynchronizer<TData>> _dataProvidersToSyncEveryFrame = new HashSet<IJobDataSynchronizer<TData>>();
+        protected readonly HashSet<IJobDataSynchronizer<TData>> _dataProvidersToSyncOnce = new HashSet<IJobDataSynchronizer<TData>>();
+        protected readonly List<IJobDataSynchronizer<TData>> _hashSetFrozenIterator = new List<IJobDataSynchronizer<TData>>();
         protected readonly TJobData _jobData = new TJobData();
         protected JobHandle _jobHandle;
 
@@ -51,6 +54,7 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         public void ManagedUpdate()
         {
             _jobHandle.Complete();
+            SynchronizeJobData();
 
             if (HavePendingProviderChanges)
             {
@@ -78,7 +82,30 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
         /// </remarks>
         public void Register(TDataProvider provider)
         {
-            // Only bail out immediately if provider is already registered AND is not pending removal
+            Register(provider, false);
+        }
+
+        /// <summary>
+        /// Register <paramref name="provider"/> to have its update job scheduled every frame
+        /// and optionally synchronize job data every frame.
+        /// </summary>
+        /// <param name="provider">Job data provider</param>
+        /// <param name="syncEveryFrame">
+        ///   If true and <paramref name="provider"/> implements <see cref="IJobDataSynchronizer{}"/>,
+        ///   data synchronization will be called every frame.
+        /// </param>
+        /// <remarks>
+        /// Registering job provider objects is O(1).
+        /// Registering an object more than once is a no-op.
+        /// </remarks>
+        public void Register(TDataProvider provider, bool syncEveryFrame)
+        {
+            if (syncEveryFrame && provider is IJobDataSynchronizer<TData> jobDataSynchronizer)
+            {
+                _dataProvidersToSyncEveryFrame.Add(jobDataSynchronizer);
+                _dataProvidersToSyncOnce.Remove(jobDataSynchronizer);
+            }
+            // Avoid adding provider to pending addition list if it is already registered AND is not pending removal
             // Providers marked for unregistration should be removed and re-registered to reset their job data
             if (_providerIndexMap.TryGetValue(provider, out int index) && !_dataProvidersToRemove.Contains(index))
             {
@@ -106,12 +133,30 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             {
                 _dataProvidersToRemove.Add(index);
             }
+            UnregisterSynchronization(provider);
         }
 
-        /// <summary>Check whether <paramref name="provider"/> is registered in manager.</summary>
+        /// <summary>
+        /// Unregister <paramref name="provider"/> from job data synchronization.
+        /// </summary>
+        /// <remarks>
+        /// Unregistering job provider objects is O(1).
+        /// Unregistering an object that wasn't registered is a no-op.
+        /// </remarks>
+        public void UnregisterSynchronization(TDataProvider provider)
+        {
+            if (provider is IJobDataSynchronizer<TData> jobDataSynchronizer)
+            {
+                _dataProvidersToSyncEveryFrame.Remove(jobDataSynchronizer);
+                _dataProvidersToSyncOnce.Remove(jobDataSynchronizer);
+            }
+        }
+
+        /// <summary>Check whether <paramref name="provider"/> is registered or pending registration in manager.</summary>
         public bool IsRegistered(TDataProvider provider)
         {
-            return _providerIndexMap.ContainsKey(provider);
+            return _dataProvidersToAdd.Contains(provider)
+                || (_providerIndexMap.TryGetValue(provider, out int index) && !_dataProvidersToRemove.Contains(index));
         }
 
         /// <summary>
@@ -127,6 +172,23 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             return _providerIndexMap.TryGetValue(provider, out int index)
                 ? _jobData[index]
                 : provider.InitialJobData;
+        }
+
+        /// <summary>
+        /// Schedules <paramref name="provider"/> to synchronize its own job data only once, in the next processed frame.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="provider"/> is not registered for updates, does not implement <see cref="IJobDataSynchronizer{}"/>
+        /// or is already registered for data synchronization, this method is a no-op.
+        /// </remarks>
+        public void SynchronizeJobDataOnce(TDataProvider provider)
+        {
+            if (IsRegistered(provider)
+                && provider is IJobDataSynchronizer<TData> jobDataSynchronizer
+                && !_dataProvidersToSyncEveryFrame.Contains(jobDataSynchronizer))
+            {
+                _dataProvidersToSyncOnce.Add(jobDataSynchronizer);
+            }
         }
 
         /// <summary>
@@ -146,6 +208,8 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             _dataProviders.Clear();
             _dataProvidersToAdd.Clear();
             _dataProvidersToRemove.Clear();
+            _dataProvidersToSyncEveryFrame.Clear();
+            _dataProvidersToSyncOnce.Clear();
 
             StopUpdating();
         }
@@ -191,12 +255,45 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
 
             foreach (TDataProvider provider in _dataProvidersToAdd)
             {
-                _dataProviders.Add(provider);
-                int index = _dataProviders.Count - 1;
-                _providerIndexMap[provider] = index;
+                int index = _dataProviders.Count;
                 _jobData.Add(provider, index);
+                _providerIndexMap[provider] = index;
+                _dataProviders.Add(provider);
             }
             _dataProvidersToAdd.Clear();
+        }
+
+        private void SynchronizeJobData()
+        {
+            SynchronizeJobData(_dataProvidersToSyncEveryFrame);
+            SynchronizeJobData(_dataProvidersToSyncOnce);
+            _dataProvidersToSyncOnce.Clear();
+        }
+
+        private void SynchronizeJobData(HashSet<IJobDataSynchronizer<TData>> synchronizers)
+        {
+            if (synchronizers.Count == 0)
+            {
+                return;
+            }
+            
+            _hashSetFrozenIterator.AddRange(synchronizers);
+            foreach (IJobDataSynchronizer<TData> jobDataSynchronizer in _hashSetFrozenIterator)
+            {
+                Debug.Assert(jobDataSynchronizer is TDataProvider, "[UpdateJobManager] FIXME: job data synchronizer should be of a job provider type");
+                if (_providerIndexMap.TryGetValue((TDataProvider) jobDataSynchronizer, out int index))
+                {
+                    try
+                    {
+                        jobDataSynchronizer.SyncJobData(ref _jobData.DataRef.ItemRefAt(index));
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogException(ex);
+                    }
+                }
+            }
+            _hashSetFrozenIterator.Clear();
         }
 
         private void StartUpdating()

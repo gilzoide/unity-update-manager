@@ -1,7 +1,6 @@
-using Gilzoide.UpdateManager.Jobs.Internal;
 using UnityEngine.Jobs;
 
-namespace Gilzoide.UpdateManager
+namespace Gilzoide.UpdateManager.Jobs.Internal
 {
     public interface IInternalUpdateTransformJob<TData> : IJobParallelForTransform
         where TData : struct

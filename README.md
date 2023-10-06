@@ -13,7 +13,8 @@ More info on Update Manager vs traditional Update: https://github.com/Menyus777/
 - Both `MonoBehaviour` and pure C# classes are supported, just implement `IUpdatable`, `ILateUpdatable` and/or `IFixedUpdatable` interface and register the object to be updated using its `RegisterInManager` extension method.
   
   Remember to unregister the objects with `UnregisterInManager` when necessary.
-- Inherit `AUpdateManagerBehaviour` to automatically register/unregister MonoBehaviours in `UpdateManager` in their `OnEnable`/`OnDisable` messages.
+- Inherit `AManagedBehaviour` to automatically register/unregister MonoBehaviours in `UpdateManager` in their `OnEnable`/`OnDisable` messages.
+  The class still needs to implement the `IUpdatable`, `ILateUpdatable` and/or `IFixedUpdatable` interfaces for any managed update methods to be run.
 - Profiler markers are used to show managed methods in the Unity profiler.
 
 Job System:
@@ -26,9 +27,9 @@ Job System:
   
   Remember to unregister the objects with `IJobUpdatable.UnregisterInManager` or `ITransformJobUpdatable.UnregisterInManager` when necessary.
 - Inherit `AJobBehaviour<MyIUpdateTransformJobStruct>` to automatically register/unregister MonoBehaviours in `UpdateTransformJobManager<MyIUpdateTransformJobStruct>` in their `OnEnable`/`OnDisable` messages
-- Burst compilation is supported, but you have to explicitly use the concrete types `UpdateJob<MyIUpdateJobStruct>` or `UpdateTransformJob<MyIUpdateTransformJobStruct>` anywhere in compiled code.
+- Burst compilation is supported, but you have to explicitly use the concrete types `BurstUpdateJob<MyIUpdateJobStruct>` or `BurstUpdateTransformJob<MyIUpdateTransformJobStruct>` anywhere in compiled code.
 
-  An easy way for that is to implement `IJobUpdatable<MyIUpdateJobStruct, UpdateJob<MyIUpdateJobStruct>>`/`ITransformJobUpdatable<MyIUpdateTransformJobStruct, UpdateTransformJob<MyIUpdateTransformJobStruct>>` or inherit `AJobBehaviour<MyIUpdateTransformJobStruct, UpdateTransformJob<MyIUpdateTransformJobStruct>>`.
+  An easy way for that is to implement `IJobUpdatable<MyIUpdateJobStruct, BurstUpdateJob<MyIUpdateJobStruct>>`/`ITransformJobUpdatable<MyIUpdateTransformJobStruct, BurstUpdateTransformJob<MyIUpdateTransformJobStruct>>` or inherit `AJobBehaviour<MyIUpdateTransformJobStruct, BurstUpdateTransformJob<MyIUpdateTransformJobStruct>>`.
 - `UpdateJobTime` class with information from Unity's `Time` class that you can access from within jobs (`deltaTime`, `time`, etc...)
 - Configurable job batch size using `[JobBatchSize(...)]` attribute in job structs.
   This is ignored in read-write transform jobs.
@@ -58,7 +59,7 @@ Otherwise, you can install directly using the [Unity Package Manager](https://do
 with the following URL:
 
 ```
-https://github.com/gilzoide/unity-update-manager.git#1.3.0
+https://github.com/gilzoide/unity-update-manager.git#1.4.0-preview1
 ```
 
 Or you can clone this repository or download a snapshot of it directly inside your project's `Assets` or `Packages` folder.
@@ -155,7 +156,7 @@ public struct MoveJob : IUpdateTransformJob
 }
 
 // 2. Create the job-updated behaviour
-// Inherit `AJobBehaviour<MoveJob, UpdateTransformJob<MoveJob>>`
+// Inherit `AJobBehaviour<MoveJob, BurstUpdateTransformJob<MoveJob>>`
 // if you want to Burst compile the job
 public class MyJobifiedBehaviour : AJobBehaviour<MoveJob>
 {
@@ -200,7 +201,7 @@ public struct CountJob : IUpdateJob
 }
 
 // 2. Create the job-updated class
-// Implement `IJobUpdatable<CountJob, UpdateJob<CountJob>>`
+// Implement `IJobUpdatable<CountJob, BurstUpdateJob<CountJob>>`
 // if you want to Burst compile the job
 public class MyJobifiedBehaviour : IJobUpdatable<CountJob>
 {

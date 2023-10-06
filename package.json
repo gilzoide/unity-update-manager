@@ -1,7 +1,7 @@
 {
   "name": "com.gilzoide.update-manager",
   "displayName": "Update Manager",
-  "version": "1.3.0",
+  "version": "1.4.0-preview1",
   "description": "Easy to use Update Manager pattern + Jobified Update for MonoBehaviours and pure C# classes alike",
   "homepage": "https://github.com/gilzoide/unity-update-manager",
   "license": "Unlicense",

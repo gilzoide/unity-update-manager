@@ -7,7 +7,7 @@ namespace Gilzoide.UpdateManager
     public class SortedList<T> : IComparer<T>, IEnumerable<T>
         where T : IComparable<T>
     {
-        private List<T> _list = new List<T>();
+        private readonly List<T> _list = new List<T>();
 
         public int Count => _list.Count;
 
