@@ -3,7 +3,6 @@
 #endif
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using Unity.Profiling;
 
 namespace Gilzoide.UpdateManager.Internal
@@ -13,46 +12,17 @@ namespace Gilzoide.UpdateManager.Internal
 #if ENABLE_PROFILER_MARKERS
         public static ProfilerMarker.AutoScope Get(string method, object obj)
         {
-            if (!_perMethodMap.TryGetValue(method, out TypeMap map))
+            Type type = obj.GetType();
+            var key = (type, method);
+            if (!_profileMarkerCache.TryGetValue(key, out ProfilerMarker profilerMarker))
             {
-                map = new TypeMap(method);
-                _perMethodMap.Add(method, map);
+                profilerMarker = new ProfilerMarker(type.Name + "." + method + "()");
+                _profileMarkerCache[key] = profilerMarker;
             }
-            return map.Get(obj.GetType());
+            return profilerMarker.Auto();
         }
 
-        private static Dictionary<string, TypeMap> _perMethodMap = new Dictionary<string, TypeMap>();
-
-        private class TypeMap
-        {
-            private readonly ConditionalWeakTable<Type, Value> _profileMarkerMap = new ConditionalWeakTable<Type, Value>();
-            private string _method;
-
-            public TypeMap(string method)
-            {
-                _method = method;
-            }
-
-            public ProfilerMarker.AutoScope Get(Type type)
-            {
-                if (!_profileMarkerMap.TryGetValue(type, out Value value))
-                {
-                    value = new Value(type, _method);
-                    _profileMarkerMap.Add(type, value);
-                }
-                return value.ProfilerMarker.Auto();
-            }
-
-            private class Value
-            {
-                public Value(Type type, string method)
-                {
-                    ProfilerMarker = new ProfilerMarker(type.Name + "." + method + "()");
-                }
-
-                public ProfilerMarker ProfilerMarker;
-            }
-        }
+        private readonly static Dictionary<(Type, string), ProfilerMarker> _profileMarkerCache = new Dictionary<(Type, string), ProfilerMarker>();
 #else
         public static IDisposable Get(string method, object obj)
         {
