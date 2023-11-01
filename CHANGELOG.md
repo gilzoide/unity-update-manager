@@ -1,5 +1,10 @@
 # Changelog
-## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.4.0...HEAD)
+## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.4.1...HEAD)
+
+
+## [1.4.1](https://github.com/gilzoide/unity-update-manager/releases/tag/1.4.1)
+### Fixed
+- Removed usage of `ConditionalWeakTable` from `ProfilerMarkerMap` implementation, which broke iOS + IL2CPP builds for some reason.
 
 
 ## [1.4.0](https://github.com/gilzoide/unity-update-manager/releases/tag/1.4.0)
