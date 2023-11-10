@@ -12,8 +12,8 @@ namespace Gilzoide.UpdateManager.Jobs
     /// <br/>
     /// This class runs jobs in parallel, so don't rely on jobs being executed in any order.
     /// </remarks>
-    /// <seealso cref="UnityEngine.Jobs.IJobParallelForTransformExtensions.Schedule"/>
-    /// <seealso cref="UnityEngine.Jobs.IJobParallelForTransformExtensions.ScheduleReadOnly"/>
+    /// <seealso cref="IJobParallelForTransformExtensions.Schedule"/>
+    /// <seealso cref="IJobParallelForTransformExtensions.ScheduleReadOnly"/>
     public class UpdateTransformJobManager<TData> : AUpdateJobManager<TData, ITransformJobUpdatable<TData>, UpdateTransformJobData<TData, ITransformJobUpdatable<TData>>>
         where TData : struct, IUpdateTransformJob
     {
@@ -26,13 +26,28 @@ namespace Gilzoide.UpdateManager.Jobs
 
         protected override JobHandle ScheduleJob(JobHandle dependsOn)
         {
-            var job = new UpdateTransformJob<TData>
+#if HAVE_BURST
+            if (IsJobBurstCompiled)
             {
-                Data = _jobData.Data,
-            };
-            return ReadOnlyTransformAccess
-                ? job.ScheduleReadOnly(_jobData.Transforms, JobBatchSize, dependsOn)
-                : job.Schedule(_jobData.Transforms, dependsOn);
+                var job = new BurstUpdateTransformJob<TData>
+                {
+                    Data = _jobData.Data,
+                };
+                return ReadOnlyTransformAccess
+                    ? job.ScheduleReadOnly(_jobData.Transforms, JobBatchSize, dependsOn)
+                    : job.Schedule(_jobData.Transforms, dependsOn);
+            }
+            else
+#endif
+            {
+                var job = new UpdateTransformJob<TData>
+                {
+                    Data = _jobData.Data,
+                };
+                return ReadOnlyTransformAccess
+                    ? job.ScheduleReadOnly(_jobData.Transforms, JobBatchSize, dependsOn)
+                    : job.Schedule(_jobData.Transforms, dependsOn);
+            }
         }
     }
 }

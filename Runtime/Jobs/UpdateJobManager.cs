@@ -11,7 +11,7 @@ namespace Gilzoide.UpdateManager.Jobs
     /// <br/>
     /// This class runs jobs in parallel, so don't rely on jobs being executed in any order.
     /// </remarks>
-    /// <seealso cref="Unity.Jobs.IJobParallelForExtensions.Schedule"/>
+    /// <seealso cref="IJobParallelForExtensions.Schedule"/>
     public class UpdateJobManager<TData> : AUpdateJobManager<TData, IJobUpdatable<TData>, UpdateJobData<TData, IJobUpdatable<TData>>>
         where TData : struct, IUpdateJob
     {
@@ -23,10 +23,22 @@ namespace Gilzoide.UpdateManager.Jobs
 
         protected unsafe override JobHandle ScheduleJob(JobHandle dependsOn)
         {
-            return new UpdateJob<TData>
+#if HAVE_BURST
+            if (IsJobBurstCompiled)
             {
-                Data = _jobData.Data,
-            }.Schedule(_jobData.Length, JobBatchSize, dependsOn);
+                return new BurstUpdateJob<TData>
+                {
+                    Data = _jobData.Data,
+                }.Schedule(_jobData.Length, JobBatchSize, dependsOn);
+            }
+            else
+#endif
+            {
+                return new UpdateJob<TData>
+                {
+                    Data = _jobData.Data,
+                }.Schedule(_jobData.Length, JobBatchSize, dependsOn);
+            }
         }
     }
 }

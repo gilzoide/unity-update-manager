@@ -33,6 +33,10 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
 
         protected abstract JobHandle ScheduleJob(JobHandle dependsOn);
 
+#if HAVE_BURST
+        protected static readonly bool IsJobBurstCompiled = UpdateJobOptions.GetIsBurstCompiled<TData>();
+#endif
+
         private readonly IJobManager[] _dependencyManagers;
         private NativeArray<JobHandle> _dependencyJobHandles;
         private int _lastProcessedFrame;

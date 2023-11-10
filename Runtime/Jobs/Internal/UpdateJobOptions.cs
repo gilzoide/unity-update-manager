@@ -79,5 +79,12 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
             }
             return managers;
         }
+
+#if HAVE_BURST
+        public static bool GetIsBurstCompiled<TData>()
+        {
+            return typeof(TData).GetCustomAttribute<Unity.Burst.BurstCompileAttribute>() != null;
+        }
+#endif
     }
 }

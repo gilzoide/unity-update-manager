@@ -5,6 +5,9 @@ using UnityEngine.Jobs;
 
 namespace Gilzoide.UpdateManager.Sample.FollowTarget
 {
+#if HAVE_BURST
+    [Unity.Burst.BurstCompile]
+#endif
     [ReadOnlyTransformAccess]
     public struct TargetJob : IUpdateTransformJob
     {
