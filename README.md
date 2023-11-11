@@ -3,7 +3,7 @@
 
 Simple to use Update Manager pattern for Unity + Jobified Update for `MonoBehaviour`s and pure C# classes alike.
 
-Using these may improve your game's CPU usage if there are thousands of objects updating every frame.
+Using these may improve your game's CPU usage when there are thousands of objects updating every frame.
 
 More info on Update Manager vs traditional Update: https://github.com/Menyus777/Game-engine-specific-optimization-techniques-for-Unity
 
@@ -20,16 +20,14 @@ More info on Update Manager vs traditional Update: https://github.com/Menyus777/
 Job System:
 - Use `UpdateJobManager<MyIUpdateJobStruct>` to run jobs every frame using Unity's Job system
 - Use `UpdateTransformJobManager<MyIUpdateTransformJobStruct>` to run jobs with `TransformAccess` every frame using Unity's Job system, so you can change your objects' transforms from jobs
+- Both `MonoBehaviour` and pure C# classes are supported, just implement `IJobUpdatable<MyIUpdateJobStruct>` or `ITransformJobUpdatable<MyIUpdateTransformJobStruct>` interface and register the object to be updated using the `RegisterInManager` extension method.
+  
+  Remember to unregister the objects with `UnregisterInManager` when necessary.
+- Inherit `AJobBehaviour<MyIUpdateTransformJobStruct>` to automatically register/unregister MonoBehaviours for update jobs in their `OnEnable`/`OnDisable` messages
+- Burst compilation is enabled when you implement `IBurstUpdateJob<BurstUpdateJob<MyJobStruct>>` instead of `IUpdateJob` in your job struct type.
+  The same is true for `IBurstUpdateTransformJob<BurstUpdateTransformJob<MyJobStruct>>` vs `IUpdateTransformJob`.
 - Job data may be modified from within jobs and fetched anytime.
-  
   This package uses double buffering to let you read values even while jobs are running and modifying data.
-- Both `MonoBehaviour` and pure C# classes are supported, just implement `IJobUpdatable<MyIUpdateJobStruct>` or `ITransformJobUpdatable<MyIUpdateTransformJobStruct>` interface and register the object to be updated using `IJobUpdatable.RegisterInManager` or `ITransformJobUpdatable.RegisterInManager` extension methods.
-  
-  Remember to unregister the objects with `IJobUpdatable.UnregisterInManager` or `ITransformJobUpdatable.UnregisterInManager` when necessary.
-- Inherit `AJobBehaviour<MyIUpdateTransformJobStruct>` to automatically register/unregister MonoBehaviours in `UpdateTransformJobManager<MyIUpdateTransformJobStruct>` in their `OnEnable`/`OnDisable` messages
-- Burst compilation is supported, but you have to explicitly use the concrete types `BurstUpdateJob<MyIUpdateJobStruct>` or `BurstUpdateTransformJob<MyIUpdateTransformJobStruct>` anywhere in compiled code.
-
-  An easy way for that is to implement `IJobUpdatable<MyIUpdateJobStruct, BurstUpdateJob<MyIUpdateJobStruct>>`/`ITransformJobUpdatable<MyIUpdateTransformJobStruct, BurstUpdateTransformJob<MyIUpdateTransformJobStruct>>` or inherit `AJobBehaviour<MyIUpdateTransformJobStruct, BurstUpdateTransformJob<MyIUpdateTransformJobStruct>>`.
 - `UpdateJobTime` class with information from Unity's `Time` class that you can access from within jobs (`deltaTime`, `time`, etc...)
 - Configurable job batch size using `[JobBatchSize(...)]` attribute in job structs.
   This is ignored in read-write transform jobs.
@@ -136,6 +134,9 @@ using UnityEngine;
 using UnityEngine.Jobs;
 
 // 1. Create the Job struct
+//
+// Note: Implement `IBurstUpdateTransformJob<BurstUpdateTransformJob<MoveJob>>`
+// instead if you want Burst to compile the job
 public struct MoveJob : IUpdateTransformJob
 {
     public Vector3 Direction;
@@ -156,8 +157,6 @@ public struct MoveJob : IUpdateTransformJob
 }
 
 // 2. Create the job-updated behaviour
-// Inherit `AJobBehaviour<MoveJob, BurstUpdateTransformJob<MoveJob>>`
-// if you want to Burst compile the job
 public class MyJobifiedBehaviour : AJobBehaviour<MoveJob>
 {
     // set the parameters in Unity's Inspector
@@ -189,6 +188,9 @@ using Gilzoide.UpdateManager.Jobs;
 using UnityEngine;
 
 // 1. Create the Job struct
+//
+// Note: Implement `IBurstUpdateJob<BurstUpdateJob<MoveJob>>`
+// instead if you want Burst to compile the job
 public struct CountJob : IUpdateJob
 {
     public int Count;
@@ -201,8 +203,6 @@ public struct CountJob : IUpdateJob
 }
 
 // 2. Create the job-updated class
-// Implement `IJobUpdatable<CountJob, BurstUpdateJob<CountJob>>`
-// if you want to Burst compile the job
 public class MyJobifiedBehaviour : IJobUpdatable<CountJob>
 {
     // Set the data passed to the first job run

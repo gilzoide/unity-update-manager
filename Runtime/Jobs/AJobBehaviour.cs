@@ -1,3 +1,4 @@
+using System;
 using Gilzoide.UpdateManager.Jobs.Internal;
 using UnityEngine;
 
@@ -76,8 +77,12 @@ namespace Gilzoide.UpdateManager.Jobs
 
     /// <summary>
     /// Alias for <see cref="AJobBehaviour{}"/>.
-    /// Pass <c>BurstUpdateTransformJob&lt;<typeparamref name="TData"/>&gt;</c> as <typeparamref name="TJob"/> to Burst compile your job.
     /// </summary>
+    /// <remarks>
+    ///   Deprecated: use <see cref="AJobBehaviour{}"/> instead and implement
+    ///   <see cref="IBurstUpdateTransformJob{}"/> in job definition to compile jobs with Burst.
+    /// </remarks>
+    [Obsolete("Use AJobBehaviour<> and implement IBurstUpdateTransformJob<> in job definition instead.")]
     public abstract class AJobBehaviour<TData, TJob> : AJobBehaviour<TData>
         where TData : struct, IUpdateTransformJob
         where TJob : struct, IInternalUpdateTransformJob<TData>

@@ -17,7 +17,7 @@ namespace Gilzoide.UpdateManager.Jobs
 #if HAVE_BURST
     [Unity.Burst.BurstCompile]
 #endif
-    public struct BurstUpdateTransformJob<TData> : IInternalUpdateTransformJob<TData>
+    public struct BurstUpdateTransformJob<TData> : IInternalUpdateTransformJob<TData>, IInternalBurstUpdateTransformJob
         where TData : struct, IUpdateTransformJob
     {
         public UnsafeNativeList<TData> Data { get; set; }

@@ -1,3 +1,4 @@
+using System;
 using Gilzoide.UpdateManager.Jobs.Internal;
 
 namespace Gilzoide.UpdateManager.Jobs
@@ -12,8 +13,12 @@ namespace Gilzoide.UpdateManager.Jobs
 
     /// <summary>
     /// Alias for <see cref="IJobUpdatable{}"/>.
-    /// Pass <c>BurstUpdateJob&lt;<typeparamref name="TData"/>&gt;</c> as <typeparamref name="TJob"/> to Burst compile your job.
     /// </summary>
+    /// <remarks>
+    ///   Deprecated: use <see cref="IJobUpdatable{}"/> instead and implement
+    ///   <see cref="IBurstUpdateJob{}"/> in job definition to compile jobs with Burst.
+    /// </remarks>
+    [Obsolete("Use IJobUpdatable<> and implement IBurstUpdateJob<> in job definition instead.")]
     public interface IJobUpdatable<TData, TJob> : IJobUpdatable<TData>
         where TData : struct, IUpdateJob
         where TJob : struct, IInternalUpdateJob<TData>

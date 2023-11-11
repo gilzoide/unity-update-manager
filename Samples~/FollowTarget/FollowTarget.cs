@@ -6,7 +6,7 @@ using UnityEngine.Jobs;
 namespace Gilzoide.UpdateManager.Sample.FollowTarget
 {
     [DependsOn(typeof(TargetJob))]
-    public struct FollowTargetJob : IUpdateTransformJob
+    public struct FollowTargetJob : IBurstUpdateTransformJob<BurstUpdateTransformJob<FollowTargetJob>>
     {
         [ReadOnly] public NativeReference<Vector3> TargetPositionReference;
         public float Speed;
@@ -23,7 +23,7 @@ namespace Gilzoide.UpdateManager.Sample.FollowTarget
         }
     }
 
-    public class FollowTarget : AJobBehaviour<FollowTargetJob, BurstUpdateTransformJob<FollowTargetJob>>,
+    public class FollowTarget : AJobBehaviour<FollowTargetJob>,
         IJobDataSynchronizer<FollowTargetJob>
     {
         [SerializeField] private Target target;

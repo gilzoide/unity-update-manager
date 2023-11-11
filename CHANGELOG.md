@@ -1,5 +1,13 @@
 # Changelog
 ## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.4.1...HEAD)
+### Added
+- `IBurstUpdateJob<>` and `IBurstUpdateTransformJob<>` interfaces to be used in place of `IUpdateJob` and `IUpdateTransformJob` when Burst compilation is desired.
+  Pass `BurstUpdateJob<...>` and `BurstUpdateTransformJob<...>` to their type parameters, so that Burst can compile the concrete job types.
+
+### Deprecated
+- `AJobBehaviour<,>`, `IJobUpdatable<,>` and `ITransformJobUpdatable<,>`.
+  Use the versions with a single type parameter instead.
+  Now that Burst support was moved to `IBurstUpdateJob<>` and `IBurstUpdateTransformJob<>`, specified at job struct definition, there is no need to specify the second parameter in job updatable types.
 
 
 ## [1.4.1](https://github.com/gilzoide/unity-update-manager/releases/tag/1.4.1)
