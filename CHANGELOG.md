@@ -1,5 +1,8 @@
 # Changelog
-## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.4.1...HEAD)
+## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.5.0...HEAD)
+
+
+## [1.5.0](https://github.com/gilzoide/unity-update-manager/releases/tag/1.5.0)
 ### Added
 - `IBurstUpdateJob<>` and `IBurstUpdateTransformJob<>` interfaces to be used in place of `IUpdateJob` and `IUpdateTransformJob` when Burst compilation is desired.
   Pass `BurstUpdateJob<...>` and `BurstUpdateTransformJob<...>` to their type parameters, so that Burst can compile the concrete job types.
