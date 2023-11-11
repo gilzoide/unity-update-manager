@@ -7,4 +7,8 @@ namespace Gilzoide.UpdateManager.Jobs.Internal
     {
         UnsafeNativeList<TData> Data { set; }
     }
+
+    public interface IInternalBurstUpdateTransformJob
+    {
+    }
 }

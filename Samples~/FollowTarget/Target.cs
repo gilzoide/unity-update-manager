@@ -5,11 +5,8 @@ using UnityEngine.Jobs;
 
 namespace Gilzoide.UpdateManager.Sample.FollowTarget
 {
-#if HAVE_BURST
-    [Unity.Burst.BurstCompile]
-#endif
     [ReadOnlyTransformAccess]
-    public struct TargetJob : IUpdateTransformJob
+    public struct TargetJob : IBurstUpdateTransformJob<BurstUpdateTransformJob<TargetJob>>
     {
         [WriteOnly] public NativeReference<Vector3> PositionReference;
 
@@ -19,7 +16,7 @@ namespace Gilzoide.UpdateManager.Sample.FollowTarget
         }
     }
 
-    public class Target : AJobBehaviour<TargetJob, BurstUpdateTransformJob<TargetJob>>
+    public class Target : AJobBehaviour<TargetJob>
     {
         public NativeReference<Vector3> PositionReference => positionReference;
         private NativeReference<Vector3> positionReference;
