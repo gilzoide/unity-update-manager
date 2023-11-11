@@ -29,25 +29,25 @@ namespace Gilzoide.UpdateManager.Jobs
 #if HAVE_BURST
             if (IsJobBurstCompiled)
             {
-                var job = new BurstUpdateTransformJob<TData>
-                {
-                    Data = _jobData.Data,
-                };
-                return ReadOnlyTransformAccess
-                    ? job.ScheduleReadOnly(_jobData.Transforms, JobBatchSize, dependsOn)
-                    : job.Schedule(_jobData.Transforms, dependsOn);
+                return Schedule<BurstUpdateTransformJob<TData>>(dependsOn);
             }
             else
 #endif
             {
-                var job = new UpdateTransformJob<TData>
-                {
-                    Data = _jobData.Data,
-                };
-                return ReadOnlyTransformAccess
-                    ? job.ScheduleReadOnly(_jobData.Transforms, JobBatchSize, dependsOn)
-                    : job.Schedule(_jobData.Transforms, dependsOn);
+                return Schedule<UpdateTransformJob<TData>>(dependsOn);
             }
+        }
+
+        protected JobHandle Schedule<TJob>(JobHandle dependsOn)
+            where TJob : struct, IInternalUpdateTransformJob<TData>
+        {
+            var job = new TJob
+            {
+                Data = _jobData.Data,
+            };
+            return ReadOnlyTransformAccess
+                ? job.ScheduleReadOnly(_jobData.Transforms, JobBatchSize, dependsOn)
+                : job.Schedule(_jobData.Transforms, dependsOn);
         }
     }
 }

@@ -21,24 +21,27 @@ namespace Gilzoide.UpdateManager.Jobs
         public static UpdateJobManager<TData> Instance => _instance != null ? _instance : (_instance = new UpdateJobManager<TData>());
         private static UpdateJobManager<TData> _instance;
 
-        protected unsafe override JobHandle ScheduleJob(JobHandle dependsOn)
+        protected override JobHandle ScheduleJob(JobHandle dependsOn)
         {
 #if HAVE_BURST
             if (IsJobBurstCompiled)
             {
-                return new BurstUpdateJob<TData>
-                {
-                    Data = _jobData.Data,
-                }.Schedule(_jobData.Length, JobBatchSize, dependsOn);
+                return Schedule<BurstUpdateJob<TData>>(dependsOn);
             }
             else
 #endif
             {
-                return new UpdateJob<TData>
-                {
-                    Data = _jobData.Data,
-                }.Schedule(_jobData.Length, JobBatchSize, dependsOn);
+                return Schedule<UpdateJob<TData>>(dependsOn);
             }
+        }
+
+        protected JobHandle Schedule<TJob>(JobHandle dependsOn)
+            where TJob : struct, IInternalUpdateJob<TData>
+        {
+            return new TJob
+            {
+                Data = _jobData.Data,
+            }.Schedule(_jobData.Length, JobBatchSize, dependsOn);
         }
     }
 }
