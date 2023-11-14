@@ -1,5 +1,10 @@
 # Changelog
-## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.5.0...HEAD)
+## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.5.1...HEAD)
+
+
+## [1.5.1](https://github.com/gilzoide/unity-update-manager/releases/tag/1.5.1)
+### Added
+- Support for editing multiple objects in `AJobBehaviourEditor`
 
 
 ## [1.5.0](https://github.com/gilzoide/unity-update-manager/releases/tag/1.5.0)
