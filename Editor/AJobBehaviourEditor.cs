@@ -6,6 +6,7 @@ using UnityEngine;
 namespace Gilzoide.UpdateManager.Editor
 {
     [CustomEditor(typeof(AJobBehaviour<>), true)]
+    [CanEditMultipleObjects]
     public class AJobBehaviourEditor : UnityEditor.Editor
     {
         private GUIStyle TopAnchoredLabel => _topAnchoredLabel != null
@@ -18,7 +19,9 @@ namespace Gilzoide.UpdateManager.Editor
 
         public override bool HasPreviewGUI()
         {
-            return Application.isPlaying && ((MonoBehaviour) target).isActiveAndEnabled;
+            return Application.isPlaying
+                && !serializedObject.isEditingMultipleObjects
+                && ((MonoBehaviour) target).isActiveAndEnabled;
         }
 
         public override GUIContent GetPreviewTitle()
