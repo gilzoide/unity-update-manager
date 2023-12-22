@@ -18,6 +18,7 @@ namespace Gilzoide.UpdateManager
     /// This class doesn't implement any execution order mechanism, so don't rely on managed methods being executed in any order.
     /// In fact, the order of executed methods will most likely change during the lifetime of the UpdateManager.
     /// </remarks>
+    [ExecuteAlways]
     public class UpdateManager : MonoBehaviour
     {
         /// <summary>Get or create the singleton instance</summary>
@@ -30,9 +31,29 @@ namespace Gilzoide.UpdateManager
             {
                 hideFlags = HideFlags.DontSave,
             };
-            DontDestroyOnLoad(gameObject);
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                gameObject.hideFlags = HideFlags.HideAndDontSave;
+            }
+            else
+#endif
+            {
+                DontDestroyOnLoad(gameObject);
+            }
             return gameObject.AddComponent<UpdateManager>();
         }
+
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void DestroyEditorUpdateManager()
+        {
+            if (_instance)
+            {
+                DestroyImmediate(_instance.gameObject);
+            }
+        }
+#endif
 
         /// <summary>
         /// Returns whether there are any objects registered for managed updates.
