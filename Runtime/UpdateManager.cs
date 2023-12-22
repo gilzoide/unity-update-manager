@@ -34,6 +34,13 @@ namespace Gilzoide.UpdateManager
             return gameObject.AddComponent<UpdateManager>();
         }
 
+        /// <summary>
+        /// Returns whether there are any objects registered for managed updates.
+        /// </summary>
+        public bool HasRegisteredObjects => _updatableObjects.Count > 0
+            || _lateUpdatableObjects.Count > 0
+            || _fixedUpdatableObjects.Count > 0;
+
         private readonly FastRemoveList<IUpdatable> _updatableObjects = new FastRemoveList<IUpdatable>();
         private readonly FastRemoveList<ILateUpdatable> _lateUpdatableObjects = new FastRemoveList<ILateUpdatable>();
         private readonly FastRemoveList<IFixedUpdatable> _fixedUpdatableObjects = new FastRemoveList<IFixedUpdatable>();
@@ -114,6 +121,7 @@ namespace Gilzoide.UpdateManager
             {
                 _fixedUpdatableObjects.Add(fixedUpdatable);
             }
+            enabled = HasRegisteredObjects;
         }
 
         /// <summary>
@@ -137,6 +145,7 @@ namespace Gilzoide.UpdateManager
             {
                 _fixedUpdatableObjects.Remove(fixedUpdatable);
             }
+            enabled = HasRegisteredObjects;
         }
 
         /// <summary>
@@ -147,6 +156,7 @@ namespace Gilzoide.UpdateManager
             _updatableObjects.Clear();
             _lateUpdatableObjects.Clear();
             _fixedUpdatableObjects.Clear();
+            enabled = false;
         }
     }
 }
