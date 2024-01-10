@@ -1,5 +1,8 @@
 # Changelog
-## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.5.1...HEAD)
+## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.5.2...HEAD)
+
+
+## [1.5.2](https://github.com/gilzoide/unity-update-manager/releases/tag/1.5.2)
 ### Changed
 - `UpdateManager` now disables itself while no updatable objects are registered.
 - `UpdateManager` is now supported in edit mode.
