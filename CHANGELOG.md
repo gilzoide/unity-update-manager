@@ -1,5 +1,10 @@
 # Changelog
 ## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.5.1...HEAD)
+### Changed
+- `UpdateManager` now disables itself while no updatable objects are registered.
+- `UpdateManager` is now supported in edit mode.
+  The singleton update manager created in edit mode will be destroyed when entering play mode.
+- Enabled `AManagedBehaviour` objects with `[ExecuteInEditMode]` or `[ExecuteAlways]` attributes have their `ManagedUpdate` and `ManagedLateUpdate` methods run in edit mode.
 
 
 ## [1.5.1](https://github.com/gilzoide/unity-update-manager/releases/tag/1.5.1)

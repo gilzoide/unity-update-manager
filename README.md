@@ -57,7 +57,7 @@ Otherwise, you can install directly using the [Unity Package Manager](https://do
 with the following URL:
 
 ```
-https://github.com/gilzoide/unity-update-manager.git#1.5.1
+https://github.com/gilzoide/unity-update-manager.git#1.5.2-preview1
 ```
 
 Or you can clone this repository or download a snapshot of it directly inside your project's `Assets` or `Packages` folder.
