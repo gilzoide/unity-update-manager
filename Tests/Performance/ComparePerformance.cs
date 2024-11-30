@@ -33,6 +33,8 @@ namespace Gilzoide.UpdateManager.Tests.Performance
             {
                 objects.Add(new GameObject(typeof(T).Name + " " + i, typeof(T)));
             }
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = -1;
             yield return Measure.Frames()
                 // .WarmupCount(100)
                 .MeasurementCount(1000)
