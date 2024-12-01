@@ -6,7 +6,7 @@ namespace Gilzoide.UpdateManager
     {
         public static bool IsQuitting { get; private set; }
 
-        [RuntimeInitializeOnLoadMethod]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void InitializeMethod()
         {
             IsQuitting = false;
