@@ -74,7 +74,7 @@ namespace Gilzoide.UpdateManager
                 try
                 {
 #if ENABLE_PROFILER_MARKERS
-                    using (ProfilerMarkerMap.Get("ManagedUpdate", updatable))
+                    using (ProfilerMarkerMap.GetUpdate(updatable))
 #endif
                     updatable.ManagedUpdate();
                 }
@@ -92,7 +92,7 @@ namespace Gilzoide.UpdateManager
                 try
                 {
 #if ENABLE_PROFILER_MARKERS
-                    using (ProfilerMarkerMap.Get("ManagedLateUpdate", lateUpdatable))
+                    using (ProfilerMarkerMap.GetLateUpdate(lateUpdatable))
 #endif
                     lateUpdatable.ManagedLateUpdate();
                 }
@@ -110,7 +110,7 @@ namespace Gilzoide.UpdateManager
                 try
                 {
 #if ENABLE_PROFILER_MARKERS
-                    using (ProfilerMarkerMap.Get("ManagedFixedUpdate", fixedUpdatable))
+                    using (ProfilerMarkerMap.GetFixedUpdate(fixedUpdatable))
 #endif
                     fixedUpdatable.ManagedFixedUpdate();
                 }
