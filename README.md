@@ -15,7 +15,7 @@ More info on Update Manager vs traditional Update: https://github.com/Menyus777/
   Remember to unregister the objects with `UnregisterInManager` when necessary.
 - Inherit `AManagedBehaviour` to automatically register/unregister MonoBehaviours in `UpdateManager` in their `OnEnable`/`OnDisable` messages.
   The class still needs to implement the `IUpdatable`, `ILateUpdatable` and/or `IFixedUpdatable` interfaces for any managed update methods to be run.
-- Profiler markers are used to show managed methods in the Unity profiler.
+- Supports profiler markers for managed update methods by adding the `UPDATE_MANAGER_ENABLE_PROFILER_MARKERS` scripting symbol to the project
 
 Job System:
 - Use `UpdateJobManager<MyIUpdateJobStruct>` to run jobs every frame using Unity's Job system

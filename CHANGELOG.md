@@ -1,5 +1,11 @@
 # Changelog
 ## [Unreleased](https://github.com/gilzoide/unity-update-manager/compare/1.5.2...HEAD)
+### Changed
+- Profile Markers are now disabled by default.
+  Use the `UPDATE_MANAGER_ENABLE_PROFILER_MARKERS` scripting symbol to enable them.
+
+### Fixed
+- Support for projects with domain reload disabled.
 
 
 ## [1.5.2](https://github.com/gilzoide/unity-update-manager/releases/tag/1.5.2)

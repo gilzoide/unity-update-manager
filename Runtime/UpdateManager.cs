@@ -1,6 +1,3 @@
-#if (UNITY_EDITOR || DEVELOPMENT_BUILD) && !UPDATE_MANAGER_DISABLE_PROFILER_MARKERS
-    #define ENABLE_PROFILER_MARKERS
-#endif
 using System;
 using Gilzoide.UpdateManager.Internal;
 using Gilzoide.UpdateManager.Jobs;
@@ -73,7 +70,7 @@ namespace Gilzoide.UpdateManager
             {
                 try
                 {
-#if ENABLE_PROFILER_MARKERS
+#if UPDATE_MANAGER_ENABLE_PROFILER_MARKERS
                     using (ProfilerMarkerMap.GetUpdate(updatable))
 #endif
                     updatable.ManagedUpdate();
@@ -91,7 +88,7 @@ namespace Gilzoide.UpdateManager
             {
                 try
                 {
-#if ENABLE_PROFILER_MARKERS
+#if UPDATE_MANAGER_ENABLE_PROFILER_MARKERS
                     using (ProfilerMarkerMap.GetLateUpdate(lateUpdatable))
 #endif
                     lateUpdatable.ManagedLateUpdate();
@@ -109,7 +106,7 @@ namespace Gilzoide.UpdateManager
             {
                 try
                 {
-#if ENABLE_PROFILER_MARKERS
+#if UPDATE_MANAGER_ENABLE_PROFILER_MARKERS
                     using (ProfilerMarkerMap.GetFixedUpdate(fixedUpdatable))
 #endif
                     fixedUpdatable.ManagedFixedUpdate();
